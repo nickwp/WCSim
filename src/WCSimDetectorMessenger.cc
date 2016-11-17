@@ -17,27 +17,29 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
   PMTConfig = new G4UIcmdWithAString("/WCSim/WCgeom",this);
   PMTConfig->SetGuidance("Set the geometry configuration for the WC.");
   PMTConfig->SetGuidance("Available options are:\n"
-                          "SuperK\n"
-			  "SuperK_20inchPMT_20perCent\n"
-			  "SuperK_20inchBandL_20perCent\n"
-			  "SuperK_12inchBandL_15perCent\n"
-			  "SuperK_20inchBandL_14perCent\n"
-			  "Cylinder_60x74_20inchBandL_14perCent\n"
-      			  "Cylinder_60x74_20inchBandL_40perCent\n"
-			  "Cylinder_12inchHPD_15perCent\n"
-                          "HyperK\n"
+								 "SuperK\n"
+								 "SuperK_20inchPMT_20perCent\n"
+								 "SuperK_20inchBandL_20perCent\n"
+								 "SuperK_12inchBandL_15perCent\n"
+								 "SuperK_20inchBandL_14perCent\n"
+								 "Cylinder_60x74_20inchBandL_14perCent\n"
+								 "Cylinder_60x74_20inchBandL_40perCent\n"
+								 "Cylinder_12inchHPD_15perCent\n"
+								 "Cylinder\n"
+								 "HyperK\n"
                           "HyperK_withHPD\n"
                          );
   PMTConfig->SetParameterName("PMTConfig", false);
   PMTConfig->SetCandidates("SuperK "
-			   "SuperK_20inchPMT_20perCent "
-			   "SuperK_20inchBandL_20perCent "
-			   "SuperK_12inchBandL_15perCent "
-			   "SuperK_20inchBandL_14perCent "
-			   "Cylinder_60x74_20inchBandL_14perCent\n"
-      			   "Cylinder_60x74_20inchBandL_40perCent\n"
-			   "Cylinder_12inchHPD_15perCent "
-			   "HyperK "
+			               "SuperK_20inchPMT_20perCent "
+			               "SuperK_20inchBandL_20perCent "
+			               "SuperK_12inchBandL_15perCent "
+			               "SuperK_20inchBandL_14perCent "
+			               "Cylinder_60x74_20inchBandL_14perCent "
+			               "Cylinder_60x74_20inchBandL_40perCent "
+			               "Cylinder_12inchHPD_15perCent "
+			               "Cylinder "
+			               "HyperK "
                            "HyperK_withHPD "
                            );
   PMTConfig->AvailableForStates(G4State_PreInit, G4State_Idle);
@@ -91,13 +93,60 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			    "off ");
   PMTCollEff->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-  waterTank_Length = new G4UIcmdWithADoubleAndUnit("/WCSim/HyperK/waterTank_Length", this);
-  waterTank_Length->SetGuidance("Set the Length of Hyper-K detector (unit: mm cm m).");
-  waterTank_Length->SetParameterName("waterTank_length", true);
-  waterTank_Length->SetDefaultValue(49500.);
-  waterTank_Length->SetUnitCategory("Length");
-  waterTank_Length->SetDefaultUnit("mm");
-  waterTank_Length->SetUnitCandidates("mm cm m");
+	waterTank_Length = new G4UIcmdWithADoubleAndUnit("/WCSim/HyperK/waterTank_Length", this);
+	waterTank_Length->SetGuidance("Set the Length of Hyper-K detector (unit: mm cm m).");
+	waterTank_Length->SetParameterName("waterTank_length", true);
+	waterTank_Length->SetDefaultValue(49500.);
+	waterTank_Length->SetUnitCategory("Length");
+	waterTank_Length->SetDefaultUnit("mm");
+	waterTank_Length->SetUnitCandidates("mm cm m");
+
+    cylinderTank_Height = new G4UIcmdWithADoubleAndUnit("/WCSim/Cylinder/cylinderTank_Height", this);
+    cylinderTank_Height->SetGuidance("Set the height of cylinder detector (unit: mm cm m).");
+    cylinderTank_Height->SetParameterName("cylinderTank_Height", true);
+    cylinderTank_Height->SetDefaultValue(14000.);
+    cylinderTank_Height->SetUnitCategory("Length");
+    cylinderTank_Height->SetDefaultUnit("mm");
+    cylinderTank_Height->SetUnitCandidates("mm cm m");
+
+	cylinderTank_Diameter = new G4UIcmdWithADoubleAndUnit("/WCSim/Cylinder/cylinderTank_Diameter", this);
+	cylinderTank_Diameter->SetGuidance("Set the diameter of cylinder detector (unit: mm cm m).");
+	cylinderTank_Diameter->SetParameterName("cylinderTank_Diameter", true);
+	cylinderTank_Diameter->SetDefaultValue(8000.);
+	cylinderTank_Diameter->SetUnitCategory("Length");
+	cylinderTank_Diameter->SetDefaultUnit("mm");
+	cylinderTank_Diameter->SetUnitCandidates("mm cm m");
+
+	cylinderTank_Coverage = new G4UIcmdWithADouble("/WCSim/Cylinder/cylinderTank_Coverage", this);
+	cylinderTank_Coverage->SetGuidance("Set the coverage of cylinder detector.");
+	cylinderTank_Coverage->SetParameterName("cylinderTank_Coverage", true);
+	cylinderTank_Coverage->SetDefaultValue(40.);
+
+	cylinderTank_PMTType = new G4UIcmdWithAString("/WCSim/Cylinder/cylinderTank_PMTType", this);
+	cylinderTank_PMTType->SetGuidance("Set the geometry configuration for the WC.");
+	cylinderTank_PMTType->SetGuidance("Available options are:\n"
+								   "PMT20inch\n"
+								   "PMT8inch\n"
+								   "PMT10inch\n"
+								   "PMT10inchHQE\n"
+								   "PMT12inchHQE\n"
+								   "HPD20inchHQE\n"
+								   "HPD12inchHQE\n"
+								   "BoxandLine20inchHQE\n"
+								   "BoxandLine12inchHQE"
+	);
+	cylinderTank_PMTType->SetParameterName("cylinderTank_PMTType", false);
+	cylinderTank_PMTType->SetCandidates("PMT20inch "
+						     	        "PMT8inch "
+							            "PMT10inch "
+							            "PMT10inchHQE "
+							            "PMT12inchHQE "
+							            "HPD20inchHQE "
+							            "HPD12inchHQE "
+							            "BoxandLine20inchHQE "
+							            "BoxandLine12inchHQE"
+	);
+
   WCConstruct = new G4UIcmdWithoutParameter("/WCSim/Construct", this);
   WCConstruct->SetGuidance("Update detector construction with new settings.");
 }
@@ -120,29 +169,32 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 {    
 	if( command == PMTConfig ) { 
 		WCSimDetector->SetIsUpright(false);
-                WCSimDetector->SetIsHyperK(false);
-                if ( newValue == "SuperK") {
-		  WCSimDetector->SetSuperKGeometry();
-		} else if (newValue == "SuperK_20inchPMT_20perCent" ){
-		  WCSimDetector->SuperK_20inchPMT_20perCent();
-		} else if (newValue == "SuperK_20inchBandL_20perCent" ){
-		  WCSimDetector->SuperK_20inchBandL_20perCent();
-		} else if ( newValue == "SuperK_12inchBandL_15perCent" ) {
-		  WCSimDetector->SuperK_12inchBandL_15perCent();
-		} else if ( newValue == "SuperK_20inchBandL_14perCent" ) {
-		  WCSimDetector->SuperK_20inchBandL_14perCent();
-		} else if ( newValue == "Cylinder_60x74_20inchBandL_14perCent" ) {
-		  WCSimDetector->Cylinder_60x74_20inchBandL_14perCent();
-		} else if ( newValue == "Cylinder_60x74_20inchBandL_40perCent" ) {
-		  WCSimDetector->Cylinder_60x74_20inchBandL_40perCent();
-		} else if (newValue == "Cylinder_12inchHPD_15perCent" ){
-		  WCSimDetector->Cylinder_12inchHPD_15perCent();
-                } else if ( newValue == "HyperK") {
-                        WCSimDetector->SetIsHyperK(true);
+		WCSimDetector->SetIsHyperK(false);
+		if (newValue == "SuperK") {
+			WCSimDetector->SetSuperKGeometry();
+		} else if (newValue == "SuperK_20inchPMT_20perCent") {
+			WCSimDetector->SuperK_20inchPMT_20perCent();
+		} else if (newValue == "SuperK_20inchBandL_20perCent") {
+			WCSimDetector->SuperK_20inchBandL_20perCent();
+		} else if (newValue == "SuperK_12inchBandL_15perCent") {
+			WCSimDetector->SuperK_12inchBandL_15perCent();
+		} else if (newValue == "SuperK_20inchBandL_14perCent") {
+			WCSimDetector->SuperK_20inchBandL_14perCent();
+		} else if (newValue == "Cylinder_60x74_20inchBandL_14perCent") {
+			WCSimDetector->Cylinder_60x74_20inchBandL_14perCent();
+		} else if (newValue == "Cylinder_60x74_20inchBandL_40perCent") {
+			WCSimDetector->Cylinder_60x74_20inchBandL_40perCent();
+		} else if (newValue == "Cylinder_12inchHPD_15perCent") {
+			WCSimDetector->Cylinder_12inchHPD_15perCent();
+		} else if (newValue == "HyperK") {
+			WCSimDetector->SetIsHyperK(true);
 			WCSimDetector->SetHyperKGeometry();
-                } else if ( newValue == "HyperK_withHPD") {
-                        WCSimDetector->SetIsHyperK(true);
+		} else if (newValue == "HyperK_withHPD") {
+			WCSimDetector->SetIsHyperK(true);
 			WCSimDetector->SetHyperKGeometry_withHPD();
+		} else if (newValue == "Cylinder") {
+			WCSimDetector->SetIsCylinder(true);
+			WCSimDetector->CylinderGeometry();
 		} else
 		  G4cout << "That geometry choice not defined!" << G4endl;
 	}
@@ -210,6 +262,45 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 	  }
 	}
 
+	if (command == cylinderTank_Height) {
+		bool isCylinder = WCSimDetector->GetIsCylinder();
+		if (isCylinder) {
+			G4cout << "Set length of cylinder " << newValue << " " << G4endl;
+            WCSimDetector->SetCylinderHeight(cylinderTank_Height->GetNewDoubleValue(newValue));
+		} else {
+			G4cout << "Not Cylinder Geometry. Detector height unchanged." << G4endl;
+		}
+	}
+
+	if (command == cylinderTank_Diameter) {
+		bool isCylinder = WCSimDetector->GetIsCylinder();
+		if (isCylinder) {
+			G4cout << "Set diameter of cylinder " << newValue << " " << G4endl;
+			WCSimDetector->SetCylinderDiameter(cylinderTank_Diameter->GetNewDoubleValue(newValue));
+		} else {
+			G4cout << "Not Cylinder Geometry. Detector diameter unchanged." << G4endl;
+		}
+	}
+
+	if (command == cylinderTank_Coverage) {
+		bool isCylinder = WCSimDetector->GetIsCylinder();
+		if (isCylinder) {
+			G4cout << "Set coverage of cylinder " << newValue << "% " << G4endl;
+			WCSimDetector->SetCylinderCoverage(cylinderTank_Coverage->GetNewDoubleValue(newValue));
+		} else {
+			G4cout << "Not Cylinder Geometry. Detector coverage unchanged." << G4endl;
+		}
+	}
+
+	if (command == cylinderTank_PMTType) {
+		bool isCylinder = WCSimDetector->GetIsCylinder();
+		if (isCylinder) {
+			G4cout << "Set PMT type of cylinder " << newValue << " " << G4endl;
+			WCSimDetector->SetCylinderPMTType(newValue);
+		} else {
+			G4cout << "Not Cylinder Geometry. Detector coverage unchanged." << G4endl;
+		}
+	}
 
 	if(command == PMTSize) {
 		G4cout << "SET PMT SIZE" << G4endl;
@@ -222,6 +313,10 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 	}
 
 	if(command == WCConstruct) {
+		bool isCylinder = WCSimDetector->GetIsCylinder();
+		if (isCylinder) {
+			WCSimDetector->UpdateCylinderGeometry();
+		}
 		WCSimDetector->UpdateGeometry();
 	}
 

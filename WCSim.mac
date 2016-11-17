@@ -36,8 +36,14 @@
 #/WCSim/HyperK/waterTank_Length 123750. mm # Equivalent length for 2 partitions
 #/WCSim/HyperK/waterTank_Length 247500. mm # Equivalent length for 1 partition
 
+# Surface detector
+/WCSim/WCgeom Cylinder
+/WCSim/Cylinder/cylinderTank_Height 14. m
+/WCSim/Cylinder/cylinderTank_Diameter 8. m
+/WCSim/Cylinder/cylinderTank_Coverage 30.
+/WCSim/Cylinder/cylinderTank_PMTType PMT8inch
 
-#/WCSim/Construct # This must be uncommented in order to construct a new detector configuration. 
+/WCSim/Construct # This must be uncommented in order to construct a new detector configuration.
 
 #Added for the PMT QE option 08/17/10 (XQ)
 # 1. Stacking only mean when the photon is generated
@@ -105,16 +111,22 @@
 
 
 # Or you can use the G4 Particle Gun
-/mygen/generator normal
-/gun/particle e-
-#/gun/particle pi0
-/gun/energy 500 MeV
-/gun/direction 1 0 0 
-/gun/position 0 0 0  
+/mygen/generator laser
+/gps/particle e-
+#/gps/particle pi0
+/gps/pos/type Volume
+/gps/pos/shape Cylinder
+/gps/pos/radius 3 m
+/gps/pos/halfz 6 m
+/gps/ang/type iso
+/gps/energy 10 MeV
+/gps/ene/type Mono
+/gps/ene/gradient 0
+/gps/ene/intercept 1
 
 ## change the name of the output root file, default = wcsim.root
 
-/WCSimIO/RootFile wcsim.root
+/WCSimIO/RootFile Cylinder8x14_10MeV_Uni_Iso.root
 
 /run/beamOn 10
 #exit

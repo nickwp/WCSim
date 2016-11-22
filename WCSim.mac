@@ -9,7 +9,7 @@
 #
 # The tube size is fixed for SK to 20"
 # These are fixed geometries for validation
-#/WCSim/WCgeom SuperK
+/WCSim/WCgeom SuperK
 
 # Some other SuperK options:
 #/WCSim/WCgeom SuperK_20inchPMT_20perCent # Note: the actual coverage is 20.27%
@@ -37,13 +37,13 @@
 #/WCSim/HyperK/waterTank_Length 247500. mm # Equivalent length for 1 partition
 
 # Surface detector
-/WCSim/WCgeom Cylinder
-/WCSim/Cylinder/cylinderTank_Height 14. m
-/WCSim/Cylinder/cylinderTank_Diameter 8. m
-/WCSim/Cylinder/cylinderTank_Coverage 30.
-/WCSim/Cylinder/cylinderTank_PMTType PMT8inch
+#/WCSim/WCgeom Cylinder
+#/WCSim/Cylinder/cylinderTank_Height 14. m
+#/WCSim/Cylinder/cylinderTank_Diameter 8. m
+#/WCSim/Cylinder/cylinderTank_Coverage 30.
+#/WCSim/Cylinder/cylinderTank_PMTType PMT8inch
 
-/WCSim/Construct # This must be uncommented in order to construct a new detector configuration.
+#/WCSim/Construct # This must be uncommented in order to construct a new detector configuration.
 
 #Added for the PMT QE option 08/17/10 (XQ)
 # 1. Stacking only mean when the photon is generated
@@ -100,10 +100,10 @@
 #/DarkRate/SetDarkMode 1 adds dark noise hits to a window of
 #width /DarkRate/SetDarkWindow [time in ns] around each hit
 #i.e. hit time ± (/DarkRate/SetDarkWindow) / 2
-/DarkRate/SetDarkMode 1
-/DarkRate/SetDarkHigh 100000
-/DarkRate/SetDarkLow 0
-/DarkRate/SetDarkWindow 4000
+#/DarkRate/SetDarkMode 1
+#/DarkRate/SetDarkHigh 100000
+#/DarkRate/SetDarkLow 0
+#/DarkRate/SetDarkWindow 4000
 
 #Uncomment one of the lines below if you want to use the OGLSX or RayTracer visualizer
 #/control/execute visOGLSX.mac
@@ -116,8 +116,8 @@
 #/gps/particle pi0
 /gps/pos/type Volume
 /gps/pos/shape Cylinder
-/gps/pos/radius 3 m
-/gps/pos/halfz 6 m
+/gps/pos/radius 15 m
+/gps/pos/halfz 15 m
 /gps/ang/type iso
 /gps/energy 10 MeV
 /gps/ene/type Mono
@@ -126,7 +126,7 @@
 
 ## change the name of the output root file, default = wcsim.root
 
-/WCSimIO/RootFile Cylinder8x14_10MeV_Uni_Iso.root
+/WCSimIO/RootFile SKtest_10MeV_Uni_Iso.root
 
-/run/beamOn 10
+/run/beamOn 10000
 #exit

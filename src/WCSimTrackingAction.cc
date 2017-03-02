@@ -13,6 +13,7 @@
 WCSimTrackingAction::WCSimTrackingAction()
 {
   ProcessList.insert("Decay") ;
+  ProcessList.insert("nCapture");
   //ProcessList.insert("MuonMinusCaptureAtRest") ;
 //   ProcessList.insert("conv");
   ParticleList.insert(111); // pi0
@@ -22,6 +23,7 @@ WCSimTrackingAction::WCSimTrackingAction()
   ParticleList.insert(-321); // kaon-
   ParticleList.insert(311); // kaon0
   ParticleList.insert(-311); // kaon0 bar
+  ParticleList.insert(2112); //neutron
   // don't put gammas there or there'll be too many
 }
 
@@ -60,7 +62,7 @@ void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
   // is the particle in the set ?
   // is it a gamma 
   // due to lazy evaluation of the 'or' in C++ the order is important
-  if( aTrack->GetParentID()==0 || 
+  if( aTrack->GetParentID()==0 ||
       ((creatorProcess!=0) && ProcessList.count(creatorProcess->GetProcessName()) ) || 
       (ParticleList.count(aTrack->GetDefinition()->GetPDGEncoding()) )
       || (aTrack->GetDefinition()->GetPDGEncoding()==22 && aTrack->GetTotalEnergy() > 50.0*MeV)

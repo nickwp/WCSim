@@ -149,6 +149,8 @@ public:
     void   SetIsCylinder(G4bool choice) {isCylinder = choice;}
     G4bool GetIsCylinder() {return isCylinder;}
 
+    void SetDopedWater(G4bool dopedWater){WCAddGd = dopedWater; }
+
   std::vector<WCSimPmtInfo*>* Get_Pmts() {return &fpmts;}
 
   G4String GetIDCollectionName(){return WCIDCollectionName;}

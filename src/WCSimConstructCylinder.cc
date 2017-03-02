@@ -88,7 +88,10 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
   //Decide if adding Gd
   water = "Water";
   if (WCAddGd)
-  {water = "Doped Water";}
+  {
+	  water = "Doped Water";
+	  if(!GetIsGadoliniumConcentrationSet()) SetGadoliniumConcentration(0.1*perCent);
+  }
 
 
   //-----------------------------------------------------

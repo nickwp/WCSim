@@ -39,6 +39,7 @@ class WCSimDetectorMessenger: public G4UImessenger
   G4UIcmdWithAString* PMTQEMethod;
   G4UIcmdWithAString* PMTCollEff;
   G4UIcmdWithABool* DopedWater;
+  G4UIcmdWithADouble* DopingConcentration;
   G4UIcmdWithADoubleAndUnit* waterTank_Length;
   G4UIcmdWithADoubleAndUnit* cylinderTank_Height;
   G4UIcmdWithADoubleAndUnit* cylinderTank_Diameter;

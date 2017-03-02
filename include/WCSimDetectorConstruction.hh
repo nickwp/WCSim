@@ -150,6 +150,8 @@ public:
     G4bool GetIsCylinder() {return isCylinder;}
 
     void SetDopedWater(G4bool dopedWater){WCAddGd = dopedWater; }
+    G4bool GetIsGadoliniumConcentrationSet() {return isGdConcentrationSet;}
+    void SetGadoliniumConcentration(G4double percent);
 
   std::vector<WCSimPmtInfo*>* Get_Pmts() {return &fpmts;}
 
@@ -194,6 +196,7 @@ private:
   G4double capAssemblyHeight;
 
   G4bool WCAddGd;
+  G4bool isGdConcentrationSet;
 
   // Code for traversing the geometry and assigning tubeIDs.
 

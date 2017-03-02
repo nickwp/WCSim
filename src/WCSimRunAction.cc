@@ -33,6 +33,9 @@ WCSimRunAction::WCSimRunAction(WCSimDetectorConstruction* test)
   wcsimdetector = test;
   messenger = new WCSimRunActionMessenger(this);
 
+  // By default do not try and save Rootracker interaction information
+  SetSaveRooTracker(0);
+
 }
 
 WCSimRunAction::~WCSimRunAction()
@@ -43,6 +46,18 @@ WCSimRunAction::~WCSimRunAction()
 void WCSimRunAction::BeginOfRunAction(const G4Run* /*aRun*/)
 {
 //   G4cout << "### Run " << aRun->GetRunID() << " start." << G4endl;
+
+  fSettingsOutputTree = NULL;
+  fSettingsInputTree = NULL;
+
+  if(SaveRooTracker){
+    //Setup settings tree
+    fSettingsInputTree = (TTree*) gDirectory->Get("Settings");
+    fSettingsInputTree->SetBranchAddress("NuIdfdPos",fNuPlanePos);
+    fSettingsInputTree->SetBranchAddress("DetRadius",&fDetRadius);
+    fSettingsOutputTree = fSettingsInputTree->CloneTree(0);
+  }
+
   numberOfEventsGenerated = 0;
   numberOfTimesWaterTubeHit = 0;
   numberOfTimesCatcherHit = 0;
@@ -84,6 +99,17 @@ void WCSimRunAction::BeginOfRunAction(const G4Run* /*aRun*/)
   SetGeoTree(geoTree);
   wcsimrootgeom = new WCSimRootGeom();
   TBranch *geoBranch = geoTree->Branch("wcsimrootgeom", "WCSimRootGeom", &wcsimrootgeom, bufsize,0);
+
+  //Setup rooTracker tree
+  if(SaveRooTracker){
+    //Setup TClonesArray to store Rootracker truth info
+    fVertices = new TClonesArray("NRooTrackerVtx", 10);
+    fVertices->Clear();
+    fNVtx = 0;
+    fRooTrackerOutputTree = new TTree("fRooTrackerOutputTree","Event Vertex Truth Array");
+    fRooTrackerOutputTree->Branch("NVtx",&fNVtx,"NVtx/I");
+    fRooTrackerOutputTree->Branch("NRooTrackerVtx","TClonesArray", &fVertices);
+  }
 
   FillGeoTree();
 }
@@ -161,6 +187,10 @@ void WCSimRunAction::FillGeoTree(){
   offset[2] = offset1[2];
   wcsimrootgeom-> SetWCOffset(offset[0],offset[1],offset[2]);
   
+  if(SaveRooTracker) {
+    fSettingsOutputTree->Fill();
+  }
+
   std::vector<WCSimPmtInfo*> *fpmts = wcsimdetector->Get_Pmts();
   WCSimPmtInfo *pmt;
   for (unsigned int i=0;i!=fpmts->size();i++){
@@ -185,4 +215,10 @@ void WCSimRunAction::FillGeoTree(){
   geoTree->Fill();
   TFile* hfile = geoTree->GetCurrentFile();
   hfile->Write(); 
+}
+
+NRooTrackerVtx* WCSimRunAction::GetRootrackerVertex(){
+  NRooTrackerVtx* currRootrackerVtx = new((*fVertices)[fNVtx])NRooTrackerVtx();
+  fNVtx += 1;
+  return currRootrackerVtx;
 }

@@ -155,6 +155,10 @@ public:
 
   std::vector<WCSimPmtInfo*>* Get_Pmts() {return &fpmts;}
 
+  G4double GetWCIDHeight(){ return WCIDHeight; }
+
+  G4double GetWCIDDiameter(){ return WCIDDiameter; }
+
   G4String GetIDCollectionName(){return WCIDCollectionName;}
 
  

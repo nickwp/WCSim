@@ -7,6 +7,11 @@
 
 #include <fstream>
 
+#include "TFile.h"
+#include "TTree.h"
+#include "TNRooTrackerVtx.hh"
+#include "TClonesArray.h"
+
 class WCSimDetectorConstruction;
 class G4ParticleGun;
 class G4GeneralParticleSource;
@@ -21,6 +26,10 @@ public:
   
 public:
   void GeneratePrimaries(G4Event* anEvent);
+  void SetupBranchAddresses(NRooTrackerVtx* nrootrackervtx);
+  void OpenRootrackerFile(G4String fileName);
+  void CopyRootrackerVertex(NRooTrackerVtx* nrootrackervtx);
+  bool GetIsRooTrackerFileFinished(){return (fEvNum==fNEntries);}
 
   // Normal gun setting calls these functions to fill jhfNtuple and Root tree
   void SetVtx(G4ThreeVector i)     { vtx = i; };
@@ -59,6 +68,7 @@ private:
 
   // Variables set by the messenger
   G4bool   useMulineEvt;
+  G4bool   useRootrackerEvt;
   G4bool   useNormalEvt;
   G4bool   useLaserEvt;  //T. Akiri: Laser flag
   std::fstream inputFile;
@@ -82,10 +92,30 @@ private:
 
   G4int    _counterRock; 
   G4int    _counterCublic; 
+
+  // Counters to read Rootracker event file
+  int fEvNum;
+  int fNEntries;
+  TFile* fInputRootrackerFile;
+
+  // Pointers to Rootracker vertex objects
+  // Temporary vertex that is saved if desired, according to WCSimIO macro option
+  TTree* fRooTrackerTree;
+  TTree* fSettingsTree;
+  NRooTrackerVtx* fTmpRootrackerVtx;
+  float fDetRadius;
+  float fNuBeamAng;
+  float fNuPlanePos[3];
+
 public:
+
+  inline TFile* GetInputRootrackerFile(){ return fInputRootrackerFile;}
 
   inline void SetMulineEvtGenerator(G4bool choice) { useMulineEvt = choice; }
   inline G4bool IsUsingMulineEvtGenerator() { return useMulineEvt; }
+
+  inline void SetRootrackerEvtGenerator(G4bool choice) { useRootrackerEvt = choice; }
+  inline G4bool IsUsingRootrackerEvtGenerator() { return useRootrackerEvt; }
 
   inline void SetNormalEvtGenerator(G4bool choice) { useNormalEvt = choice; }
   inline G4bool IsUsingNormalEvtGenerator()  { return useNormalEvt; }

@@ -21,6 +21,9 @@
 #pragma link C++ class WCSimRootPMT+;
 #pragma link C++ class WCSimPmtInfo+;
 #pragma link C++ class WCSimEnumerations+;
+#pragma link C++ class RooTrackerVtxBase+;
+#pragma link C++ class JNuBeamFlux+;
+#pragma link C++ class NRooTrackerVtx+;
 
 
 #endif

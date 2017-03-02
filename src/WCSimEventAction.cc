@@ -145,6 +145,12 @@ void WCSimEventAction::EndOfEventAction(const G4Event* evt)
   G4int n_trajectories = 0;
   if (trajectoryContainer) n_trajectories = trajectoryContainer->entries();
   
+  if(generatorAction->GetIsRooTrackerFileFinished()){
+    const G4Run* run;
+    GetRunAction()->EndOfRunAction(run);
+    exit(0);
+  }
+
   // ----------------------------------------------------------------------
   //  Get Event Information
   // ----------------------------------------------------------------------
@@ -907,6 +913,15 @@ void WCSimEventAction::FillRootEvent(G4int event_id,
   
   TTree* tree = GetRunAction()->GetTree();
   tree->Fill();
+
+  // Check we are supposed to be saving the NEUT vertex and that the generator was given a NEUT vector file to process
+  // If there is no NEUT vector file an empty NEUT vertex will be written to the output file
+  if(GetRunAction()->GetSaveRooTracker() && generatorAction->IsUsingRootrackerEvtGenerator()){
+      GetRunAction()->ClearRootrackerVertexArray();
+      generatorAction->CopyRootrackerVertex(GetRunAction()->GetRootrackerVertex());
+      GetRunAction()->FillRootrackerVertexTree();
+  }
+
   TFile* hfile = tree->GetCurrentFile();
   // MF : overwrite the trees -- otherwise we have as many copies of the tree
   // as we have events. All the intermediate copies are incomplete, only the

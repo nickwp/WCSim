@@ -219,7 +219,25 @@ void NRooTrackerVtx::Init()
     EvtCode       = new TObjString(""); 
     OrigFileName  = new TObjString(""); 
     OrigTreeName  = new TObjString(""); 
-
+    
+    EvtCode = 0;
+    StdHepPdg = 0;
+    StdHepStatus = 0;
+    StdHepFd = 0;
+    StdHepLd = 0;
+    StdHepFm = 0;
+    StdHepLm = 0;
+    NEipvc = 0;
+    NEiorgvc = 0;
+    NEiflgvc = 0;
+    NEicrnvc = 0;
+    NEiflgvert = 0;
+    NEabspvert = 0;
+    NEabstpvert = 0;
+    NEipvert = 0;
+    NEiverti = 0;
+    NEivertf = 0;
+    
     this->Reset();
 }
 //_______________________________________________________________________________________

@@ -103,7 +103,11 @@ private:
   TTree* fRooTrackerTree;
   TTree* fSettingsTree;
   NRooTrackerVtx* fTmpRootrackerVtx;
+  TClonesArray* fRooTrackerVtxTCA;
+  Int_t fNVtx;
+  bool fIsRooTrackerOutputTree;
   float fDetRadius;
+  float fDetCentre[3];
   float fNuBeamAng;
   float fNuPlanePos[3];
 

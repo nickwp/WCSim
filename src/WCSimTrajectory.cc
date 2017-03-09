@@ -8,6 +8,9 @@
 #include "G4UnitsTable.hh"
 #include "G4VProcess.hh"
 
+#include "G4PhysicalConstants.hh"
+#include "G4SystemOfUnits.hh"
+
 #include <sstream>
 
 //G4Allocator<WCSimTrajectory> aTrajectoryAllocator;
@@ -90,14 +93,10 @@ void WCSimTrajectory::ShowTrajectory(std::ostream& os) const
   // ... or override with your own code here.
 }
 
-void WCSimTrajectory::DrawTrajectory(G4int i_mode) const
+void WCSimTrajectory::DrawTrajectory() const
 {
   // Invoke the default implementation in G4VTrajectory...
-#if G4VERSIONCODE < 41000
-  G4VTrajectory::DrawTrajectory(i_mode);
-#else
   G4VTrajectory::DrawTrajectory();
-#endif
   // ... or override with your own code here.
 }
 

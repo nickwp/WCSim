@@ -62,7 +62,8 @@ WCSimEventAction::WCSimEventAction(WCSimRunAction* myRun,
 				   WCSimPrimaryGeneratorAction* myGenerator)
   :runAction(myRun), generatorAction(myGenerator), 
    detectorConstructor(myDetector),
-   ConstructedDAQClasses(false)
+   ConstructedDAQClasses(false),
+   SavedOptions(false)
 {
   DAQMessenger = new WCSimWCDAQMessenger(this);
 
@@ -123,8 +124,13 @@ void WCSimEventAction::CreateDAQInstances()
 
 void WCSimEventAction::BeginOfEventAction(const G4Event*)
 {
-  if(!ConstructedDAQClasses)
+  if(!ConstructedDAQClasses) {
     CreateDAQInstances();
+
+    //and save options in output file
+    G4DigiManager* DMman = G4DigiManager::GetDMpointer();
+
+  }
 }
 
 void WCSimEventAction::EndOfEventAction(const G4Event* evt)
@@ -288,9 +294,9 @@ void WCSimEventAction::EndOfEventAction(const G4Event* evt)
    //  jhfNtuple.vtx[0] = vtx[0]/1000.; // interaction vertex
    //jhfNtuple.vtx[1] = vtx[1]/1000.; // interaction vertex
    //jhfNtuple.vtx[2] = vtx[2]/1000.; // interaction vertex
-   jhfNtuple.vtx[0] = vtx[0]/CLHEP::cm; // interaction vertex
-   jhfNtuple.vtx[1] = vtx[1]/CLHEP::cm; // interaction vertex
-   jhfNtuple.vtx[2] = vtx[2]/CLHEP::cm; // interaction vertex
+   jhfNtuple.vtx[0] = vtx[0]/cm; // interaction vertex
+   jhfNtuple.vtx[1] = vtx[1]/cm; // interaction vertex
+   jhfNtuple.vtx[2] = vtx[2]/cm; // interaction vertex
    jhfNtuple.vecRecNumber = vecRecNumber; //vectorfile record number
    
    // mustop, pstop, npar will be filled later
@@ -320,9 +326,9 @@ void WCSimEventAction::EndOfEventAction(const G4Event* evt)
    jhfNtuple.pdir[npar][1] = beamenergy*beamdir[1]; // momentum-vector 
    jhfNtuple.pdir[npar][2] = beamenergy*beamdir[2]; // momentum-vector 
    // M Fechner, same as above
-   jhfNtuple.stop[npar][0] = vtx[0]/CLHEP::cm;  // stopping point (not meaningful)
-   jhfNtuple.stop[npar][1] = vtx[1]/CLHEP::cm;  // stopping point (not meaningful)
-   jhfNtuple.stop[npar][2] = vtx[2]/CLHEP::cm;  // stopping point (not meaningful)
+   jhfNtuple.stop[npar][0] = vtx[0]/cm;  // stopping point (not meaningful)
+   jhfNtuple.stop[npar][1] = vtx[1]/cm;  // stopping point (not meaningful)
+   jhfNtuple.stop[npar][2] = vtx[2]/cm;  // stopping point (not meaningful)
    jhfNtuple.parent[npar] = 0;
    
    npar++;
@@ -363,9 +369,9 @@ void WCSimEventAction::EndOfEventAction(const G4Event* evt)
   jhfNtuple.pdir[npar][1] = targetpmag*targetdir[1];  // momentum-vector 
   jhfNtuple.pdir[npar][2] = targetpmag*targetdir[2];  // momentum-vector 
   // M Fechner, same as above
-  jhfNtuple.stop[npar][0] = vtx[0]/CLHEP::cm;  // stopping point (not meaningful)
-  jhfNtuple.stop[npar][1] = vtx[1]/CLHEP::cm;  // stopping point (not meaningful)
-  jhfNtuple.stop[npar][2] = vtx[2]/CLHEP::cm;  // stopping point (not meaningful)
+  jhfNtuple.stop[npar][0] = vtx[0]/cm;  // stopping point (not meaningful)
+  jhfNtuple.stop[npar][1] = vtx[1]/cm;  // stopping point (not meaningful)
+  jhfNtuple.stop[npar][2] = vtx[2]/cm;  // stopping point (not meaningful)
   jhfNtuple.parent[npar] = 0;
 
   npar++;
@@ -378,7 +384,7 @@ void WCSimEventAction::EndOfEventAction(const G4Event* evt)
 	(WCSimTrajectory*)((*(evt->GetTrajectoryContainer()))[i]);
 
       if (trj->GetCharge() != 0.)
- 	trj->DrawTrajectory(50);
+ 	trj->DrawTrajectory();
     }
 
    G4cout << " Filling Root Event " << G4endl;
@@ -402,6 +408,21 @@ void WCSimEventAction::EndOfEventAction(const G4Event* evt)
 		WCDC_hits,
 		WCDC);
 
+  //save DAQ options here. This ensures that when the user selects a default option
+  // (e.g. with -99), the saved option value in the output reflects what was run
+  if(!SavedOptions) {
+    WCSimRootOptions * wcsimopt = runAction->GetRootOptions();
+    //Dark noise
+    WCDNM->SaveOptionsToOutput(wcsimopt);
+    //Digitizer
+    WCDM->SaveOptionsToOutput(wcsimopt);
+    //Trigger
+    WCTM->SaveOptionsToOutput(wcsimopt);
+    //Generator
+    generatorAction->SaveOptionsToOutput(wcsimopt);
+    
+    SavedOptions = true;
+  }
 }
 
 G4int WCSimEventAction::WCSimEventFindStartingVolume(G4ThreeVector vtx)
@@ -598,14 +619,14 @@ void WCSimEventAction::FillRootEvent(G4int event_id,
   std::set<int> pionList;
   std::set<int> antipionList;
 
-    // Pi0 specific variables
-    Float_t pi0Vtx[3];
-    Int_t   gammaID[2];
-    Float_t gammaE[2];
-    Float_t gammaVtx[2][3];
-    Int_t   r = 0;
+  // Pi0 specific variables
+  Float_t pi0Vtx[3];
+  Int_t   gammaID[2];
+  Float_t gammaE[2];
+  Float_t gammaVtx[2][3];
+  Int_t   r = 0;
 
-    G4int n_trajectories = 0;
+  G4int n_trajectories = 0;
   if (TC)
     n_trajectories = TC->entries();
 
@@ -686,8 +707,8 @@ void WCSimEventAction::FillRootEvent(G4int event_id,
       {
 	dir[l]= mom[l]/mommag; // direction 
 	pdir[l]=mom[l];        // momentum-vector 
-	stop[l]=Stop[l]/CLHEP::cm; // stopping point 
-	start[l]=Start[l]/CLHEP::cm; // starting point 
+	stop[l]=Stop[l]/cm; // stopping point 
+	start[l]=Start[l]/cm; // starting point 
 	G4cout<<"part 2 start["<<l<<"]: "<< start[l] <<G4endl;
       }
 
@@ -922,11 +943,10 @@ void WCSimEventAction::FillRootEvent(G4int event_id,
       GetRunAction()->FillRootrackerVertexTree();
   }
 
-  TFile* hfile = tree->GetCurrentFile();
   // MF : overwrite the trees -- otherwise we have as many copies of the tree
   // as we have events. All the intermediate copies are incomplete, only the
   // last one is useful --> huge waste of disk space.
-  hfile->Write("",TObject::kOverwrite);
+  tree->Write("",TObject::kOverwrite);
   
   // M Fechner : reinitialize the super event after the writing is over
   wcsimrootsuperevent->ReInitialize();

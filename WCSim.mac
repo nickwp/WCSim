@@ -51,7 +51,7 @@
 #/WCSim/DopingConcentration 0.1
 #/WCSim/DopedWater true
 
-#/WCSim/Construct # This must be uncommented in order to construct a new detector configuration.
+#/WCSim/Construct # This must be uncommented in order to construct a new detector configuration. 
 
 #Added for the PMT QE option 08/17/10 (XQ)
 # 1. Stacking only mean when the photon is generated

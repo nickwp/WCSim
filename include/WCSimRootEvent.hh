@@ -173,30 +173,30 @@ public:
 //////////////////////////////////////////////////////////////////////////
 
 class WCSimRootPi0 : public TObject {
-    // this is a class used specifically for Pi0 events
+  // this is a class used specifically for Pi0 events
 
 private:
-    Float_t fPi0Vtx[3];
-    Int_t   fGammaID[2];
-    Float_t fGammaE[2];
-    Float_t fGammaVtx[2][3];
+  Float_t fPi0Vtx[3];
+  Int_t   fGammaID[2];
+  Float_t fGammaE[2];
+  Float_t fGammaVtx[2][3];
 
 public:
-    WCSimRootPi0() {}
+  WCSimRootPi0() {}
 
-    virtual ~WCSimRootPi0() {}
+  virtual ~WCSimRootPi0() {}
 
-    void Set(Float_t pi0Vtx[3],
-	     Int_t   gammaID[2],
-	     Float_t gammaE[2],
-	     Float_t gammaVtx[2][3]);
+  void Set(Float_t pi0Vtx[3],
+	   Int_t   gammaID[2],
+	   Float_t gammaE[2],
+	   Float_t gammaVtx[2][3]);
 
-    Float_t  GetPi0Vtx(int i)           const { return (i<3) ? fPi0Vtx[i]: 0;}
-    Int_t    GetGammaID(int i)          const { return (i<2) ? fGammaID[i]: 0;}
-    Float_t  GetGammaE(int i)           const { return (i<2) ? fGammaE[i]: 0;}
-    Float_t  GetGammaVtx(int i, int j)  const { return fGammaVtx[i][j];}
+  Float_t  GetPi0Vtx(int i)           const { return (i<3) ? fPi0Vtx[i]: 0;}
+  Int_t    GetGammaID(int i)          const { return (i<2) ? fGammaID[i]: 0;}
+  Float_t  GetGammaE(int i)           const { return (i<2) ? fGammaE[i]: 0;}
+  Float_t  GetGammaVtx(int i, int j)  const { return fGammaVtx[i][j];}
 
-ClassDef(WCSimRootPi0,1)
+  ClassDef(WCSimRootPi0,1)
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -204,22 +204,22 @@ ClassDef(WCSimRootPi0,1)
 class WCSimRootCaptureGamma : public TObject {
 
 private:
-    Int_t   fID;
-    Float_t fEnergy;
-    Float_t fDir[3];
+  Int_t   fID;
+  Float_t fEnergy;
+  Float_t fDir[3];
 
 public:
-    WCSimRootCaptureGamma() {}
-    WCSimRootCaptureGamma(Int_t id,
-                          Float_t energy,
-                          Float_t dir[3]
-    );
+  WCSimRootCaptureGamma() {}
+  WCSimRootCaptureGamma(Int_t id,
+                        Float_t energy,
+                        Float_t dir[3]
+  );
 
-    virtual ~WCSimRootCaptureGamma() {}
+  virtual ~WCSimRootCaptureGamma() {}
 
-    Int_t    GetID()           const { return fID;}
-    Float_t  GetE()            const { return fEnergy;}
-    Float_t  GetDir(int i)     const { return (i<3) ? fDir[i]: 0;}
+  Int_t    GetID()           const { return fID;}
+  Float_t  GetE()            const { return fEnergy;}
+  Float_t  GetDir(int i)     const { return (i<3) ? fDir[i]: 0;}
 
 ClassDef(WCSimRootCaptureGamma,1)
 };
@@ -227,46 +227,46 @@ ClassDef(WCSimRootCaptureGamma,1)
 //////////////////////////////////////////////////////////////////////////
 
 class WCSimRootCapture : public TObject {
-    // this is a class used specifically for neutron capture events
+  // this is a class used specifically for neutron capture events
 
 private:
-    Int_t   	   fCaptureParent;
-    Float_t 	   fCaptureVtx[3];
-    Int_t   	   fNGamma;
-    Float_t 	   fTotalGammaE;
-    Float_t 	   fCaptureT;
-    Int_t          fCaptureNucleus;
-    TClonesArray * fGammas;
-    bool 	   IsZombie;
+  Int_t          fCaptureParent;
+  Float_t        fCaptureVtx[3];
+  Int_t          fNGamma;
+  Float_t        fTotalGammaE;
+  Float_t        fCaptureT;
+  Int_t          fCaptureNucleus;
+  TClonesArray * fGammas;
+  bool           IsZombie;
 
 public:
-    WCSimRootCapture() {
-      fGammas = 0;
-      IsZombie = true;
-    }
-    WCSimRootCapture(Int_t captureParent);
+  WCSimRootCapture() {
+    fGammas = 0;
+    IsZombie = true;
+  }
+  WCSimRootCapture(Int_t captureParent);
 
-    virtual ~WCSimRootCapture();
+  virtual ~WCSimRootCapture();
 
-    void SetInfo(Float_t captureVtx[3],
-	         Float_t captureT,
-		 Int_t   captureNucleus
-    );
+  void SetInfo(Float_t captureVtx[3],
+               Float_t captureT,
+               Int_t   captureNucleus
+  );
 
-    void AddGamma(Int_t   gammaID,
-		  Float_t gammaE,
-		  Float_t gammaDir[3]
-    );
+  void AddGamma(Int_t   gammaID,
+                Float_t gammaE,
+                Float_t gammaDir[3]
+  );
 
-    Int_t                   GetCaptureParent()   const { return fCaptureParent;}
-    Float_t                 GetCaptureVtx(int i) const { return (i<3) ? fCaptureVtx[i]: 0;}
-    Int_t                   GetNGamma()          const { return fNGamma;}
-    Float_t                 GetTotalGammaE()     const { return fTotalGammaE;}
-    Float_t                 GetCaptureT()        const { return fCaptureT;}
-    Int_t                   GetCaptureNucleus()  const { return fCaptureNucleus;}
-    TClonesArray	   *GetGammas()          const { return fGammas;}
+  Int_t                   GetCaptureParent()   const { return fCaptureParent;}
+  Float_t                 GetCaptureVtx(int i) const { return (i<3) ? fCaptureVtx[i]: 0;}
+  Int_t                   GetNGamma()          const { return fNGamma;}
+  Float_t                 GetTotalGammaE()     const { return fTotalGammaE;}
+  Float_t                 GetCaptureT()        const { return fCaptureT;}
+  Int_t                   GetCaptureNucleus()  const { return fCaptureNucleus;}
+  TClonesArray           *GetGammas()          const { return fGammas;}
 
-ClassDef(WCSimRootCapture,1)
+  ClassDef(WCSimRootCapture,1)
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -333,8 +333,8 @@ public:
   void          SetNumTubesHit(Int_t i) {fNumTubesHit = i;}
   void          SetSumQ(Float_t x){fSumQ = x;}
   void          SetNumDigitizedTubes(Int_t i) {fNumDigitizedTubes = i;}
-  void          SetPi0Info(Float_t pi0Vtx[3],
-			   Int_t   gammaID[2],
+  void          SetPi0Info(Float_t pi0Vtx[3], 
+			   Int_t   gammaID[2], 
 			   Float_t gammaE[2],
 			   Float_t gammaVtx[2][3]);
   void          SetCaptureParticle(Int_t parent,
@@ -346,8 +346,8 @@ public:
                                    Int_t id);
 
 
-  WCSimRootEventHeader *GetHeader()                 {return &fEvtHdr; }
-  WCSimRootPi0       *GetPi0Info()                  {return &fPi0; }
+  WCSimRootEventHeader *GetHeader()               {return &fEvtHdr; }
+  WCSimRootPi0       *GetPi0Info()                 {return &fPi0; }
   Int_t               GetMode()               const {return fMode;}
   Int_t               GetVtxvol()             const {return fVtxvol;}
   Float_t             GetVtx(Int_t i=0)             {return (i<3) ? fVtx[i]: 0;}
@@ -364,7 +364,7 @@ public:
   Int_t               GetNcherenkovdigihits() const {return fNcherenkovdigihits;}
   Float_t             GetSumQ()               const { return fSumQ;}
   TriggerType_t       GetTriggerType()        const { return fTriggerType;}
-  std::vector<Float_t> GetTriggerInfo()       const { return fTriggerInfo;}
+  std::vector<Float_t> GetTriggerInfo()        const { return fTriggerInfo;}
 
   WCSimRootTrack         *AddTrack(Int_t ipnu, 
 				   Int_t flag, 
@@ -403,7 +403,7 @@ public:
   TClonesArray	      *GetCaptures() const {return fCaptures;}
 
 
-ClassDef(WCSimRootTrigger,2) //WCSimRootEvent structure
+  ClassDef(WCSimRootTrigger,2) //WCSimRootEvent structure
 };
 
 

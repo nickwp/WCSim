@@ -62,7 +62,7 @@ void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
   // is the particle in the set ?
   // is it a gamma 
   // due to lazy evaluation of the 'or' in C++ the order is important
-  if( aTrack->GetParentID()==0 ||
+  if( aTrack->GetParentID()==0 || 
       ((creatorProcess!=0) && ProcessList.count(creatorProcess->GetProcessName()) ) || 
       (ParticleList.count(aTrack->GetDefinition()->GetPDGEncoding()) )
       || (aTrack->GetDefinition()->GetPDGEncoding()==22 && aTrack->GetTotalEnergy() > 50.0*MeV)

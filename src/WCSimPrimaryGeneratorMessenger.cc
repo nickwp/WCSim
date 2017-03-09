@@ -68,7 +68,7 @@ void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String 
     else if ( newValue == "gps")
     {
       myAction->SetMulineEvtGenerator(false);
-      myAction->SetRootrackerEvtGenerator(true);
+      myAction->SetRootrackerEvtGenerator(false);
       myAction->SetGunEvtGenerator(false);
       myAction->SetLaserEvtGenerator(false);
       myAction->SetGPSEvtGenerator(true);
@@ -78,7 +78,7 @@ void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String 
       myAction->SetMulineEvtGenerator(false);
       myAction->SetRootrackerEvtGenerator(true);
       myAction->SetGunEvtGenerator(false);
-      myAction->SetLaserEvtGenerator(true);
+      myAction->SetLaserEvtGenerator(false);
       myAction->SetGPSEvtGenerator(false);
     }
   }

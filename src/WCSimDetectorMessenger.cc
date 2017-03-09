@@ -25,7 +25,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			  "Cylinder_60x74_20inchBandL_14perCent\n"
 			  "Cylinder_60x74_20inchBandL_40perCent\n"
 			  "Cylinder_12inchHPD_15perCent\n"
-              "Cylinder  "
+			  "Cylinder  "
 			  "HyperK\n"
 			  "EggShapedHyperK\n"
 			  "EggShapedHyperK_withHPD\n"
@@ -39,7 +39,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			  "Cylinder_60x74_20inchBandL_14perCent "
 			  "Cylinder_60x74_20inchBandL_40perCent "
 			  "Cylinder_12inchHPD_15perCent "
-              "Cylinder "
+			  "Cylinder "
 			  "HyperK "
 			  "EggShapedHyperK "
 			  "EggShapedHyperK_withHPD "
@@ -218,16 +218,16 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 		} else
 		  G4cout << "That geometry choice is not defined!" << G4endl;
 	}
-
+  
 	if (command == SavePi0){
-		G4cout << "Set the flag for saving pi0 info " << newValue << G4endl;
-		if (newValue=="true"){
-			WCSimDetector->SavePi0Info(true);
-		}else if (newValue == "false"){
-			WCSimDetector->SavePi0Info(false);
-		}else{
-
-		}
+	  G4cout << "Set the flag for saving pi0 info " << newValue << G4endl;
+	  if (newValue=="true"){
+	    WCSimDetector->SavePi0Info(true);
+	  }else if (newValue == "false"){
+	    WCSimDetector->SavePi0Info(false);
+	  }else{
+	    
+	  }
 	}
 
 	if (command == SaveCapture){

@@ -131,13 +131,13 @@ WCSimRootTrigger::~WCSimRootTrigger()
     fTracks->Delete();            
     fCherenkovHits->Delete();      
     fCherenkovHitTimes->Delete();   
-    fCherenkovDigiHits->Delete();
+    fCherenkovDigiHits->Delete();  
     fCaptures->Delete();
     
     delete   fTracks;            
     delete   fCherenkovHits;      
     delete   fCherenkovHitTimes;   
-    delete   fCherenkovDigiHits;
+    delete   fCherenkovDigiHits; 
     delete   fCaptures;
   }
   mystopw->Stop();
@@ -214,15 +214,15 @@ void WCSimRootTrigger::SetTriggerInfo(TriggerType_t trigger_type,
 
 //_____________________________________________________________________________
 
-void WCSimRootTrigger::SetPi0Info(Float_t pi0Vtx[3],
-                                  Int_t   gammaID[2],
-                                  Float_t gammaE[2],
-                                  Float_t gammaVtx[2][3])
+void WCSimRootTrigger::SetPi0Info(Float_t pi0Vtx[3], 
+				 Int_t   gammaID[2], 
+				 Float_t gammaE[2],
+				 Float_t gammaVtx[2][3])
 {
-    fPi0.Set(pi0Vtx,
-             gammaID,
-             gammaE,
-             gammaVtx);
+  fPi0.Set(pi0Vtx, 
+	   gammaID, 
+	   gammaE,
+	   gammaVtx);
 }
 
 //_____________________________________________________________________________
@@ -250,23 +250,23 @@ void WCSimRootTrigger::SetCaptureParticle(Int_t parent,
 
 //_____________________________________________________________________________
 
-void WCSimRootPi0::Set(Float_t pi0Vtx[3],
-                       Int_t   gammaID[2],
-                       Float_t gammaE[2],
-                       Float_t gammaVtx[2][3])
+void WCSimRootPi0::Set(Float_t pi0Vtx[3], 
+			Int_t   gammaID[2], 
+			Float_t gammaE[2],
+			Float_t gammaVtx[2][3])
 {
-    for (int i=0;i<2;i++)
-    {
-        fGammaID[i] = gammaID[i];
-        fGammaE[i]  = gammaE[i];
-    }
+  for (int i=0;i<2;i++)
+  {
+    fGammaID[i] = gammaID[i];
+    fGammaE[i]  = gammaE[i];
+  }
 
-    for (int j=0;j<3;j++)
-    {
-        fPi0Vtx[j]      = pi0Vtx[j];
-        fGammaVtx[0][j] = gammaVtx[0][j];
-        fGammaVtx[1][j] = gammaVtx[1][j];
-    }
+  for (int j=0;j<3;j++)
+  {
+    fPi0Vtx[j]      = pi0Vtx[j];
+    fGammaVtx[0][j] = gammaVtx[0][j];
+    fGammaVtx[1][j] = gammaVtx[1][j];
+  }
 }
 
 //_____________________________________________________________________________
@@ -325,7 +325,7 @@ WCSimRootCaptureGamma::WCSimRootCaptureGamma(Int_t id,
 
 //_____________________________________________________________________________
 
-WCSimRootTrack *WCSimRootTrigger::AddTrack(Int_t ipnu,
+WCSimRootTrack *WCSimRootTrigger::AddTrack(Int_t ipnu, 
 					   Int_t flag, 
 					   Float_t m, 
 					   Float_t p, 
@@ -527,3 +527,6 @@ void WCSimRootEvent::Reset(Option_t* /*o*/)
 {
   //nothing for now
 }
+
+
+

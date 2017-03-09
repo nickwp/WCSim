@@ -240,8 +240,8 @@ private:
   // toggle between lArD readout types
   // toggle between MRDScint and MRDk2k
 
-    G4bool pi0Info_isSaved;
-    G4bool captureInfo_isSaved;
+  G4bool pi0Info_isSaved;
+  G4bool captureInfo_isSaved;
 
 
   // XQ 08/17/10

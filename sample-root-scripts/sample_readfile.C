@@ -1,18 +1,9 @@
 #include <iostream>
 #include <TH1F.h>
 #include <stdio.h>     
-#include <stdlib.h>
-#include <TSystem.h>
-#include <TFile.h>
-#include <TTree.h>
-#include <WCSimRootEvent.hh>
-#include <WCSimRootGeom.hh>
-#include <TCanvas.h>
-
-using namespace std;
-
+#include <stdlib.h>    
 // Simple example of reading a generated Root file
-int sample_readfile(char *filename=NULL, bool verbose=false)
+void sample_readfile(char *filename=NULL, bool verbose=false)
 {
   // Clear global scope
   //gROOT->Reset();
@@ -225,10 +216,10 @@ int sample_readfile(char *filename=NULL, bool verbose=false)
 	if(verbose) printf("Total pe: %d times( ",peForTube);
 	for (int j = timeArrayIndex; j < timeArrayIndex + peForTube; j++)
 	{
-	  WCSimRootCherenkovHitTime * HitTime =
-	    dynamic_cast<WCSimRootCherenkovHitTime*>(timeArray->At(j));
+	  WCSimRootCherenkovHitTime HitTime = 
+	    dynamic_cast<WCSimRootCherenkovHitTime>(timeArray->At(j));
 	  
-	  if(verbose) printf("%6.2f ", HitTime->GetTruetime() );
+	  if(verbose) printf("%6.2f ", HitTime.GetTruetime() );	     
 	}
 	if(verbose) cout << ")" << endl;
       }

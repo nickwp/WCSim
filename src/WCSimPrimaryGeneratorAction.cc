@@ -334,7 +334,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
         // Now simulate the outgoing particles
         for (int i = 3; i < fTmpRootrackerVtx->StdHepN; i++){
-            if(fIsRooTrackerOutputTree && stdHepPdg[i]!=2112) continue; // Only simulate the neutrons
+            if(fIsRooTrackerOutputTree && stdHepPdg[i]!=2112 && stdHepPdg[i]!=2212) continue; // Only simulate nucleons
             xDir=fTmpRootrackerVtx->StdHepP4[i][0];
             yDir=fTmpRootrackerVtx->StdHepP4[i][1];
             zDir=fTmpRootrackerVtx->StdHepP4[i][2];

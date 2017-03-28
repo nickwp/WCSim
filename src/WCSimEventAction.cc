@@ -721,7 +721,6 @@ void WCSimEventAction::FillRootEvent(G4int event_id,
 
 	if (ngates)
 	{
-
 	  if ( ttime > WCTM->GetTriggerTime(0)+950. && WCTM->GetTriggerTime(1)+950. > ttime ) choose_event=1; 
 	  if ( ttime > WCTM->GetTriggerTime(1)+950. && WCTM->GetTriggerTime(2)+950. > ttime ) choose_event=2; 
 	  if (choose_event >= ngates) choose_event = ngates-1; // do not overflow the number of events
@@ -777,8 +776,8 @@ void WCSimEventAction::FillRootEvent(G4int event_id,
                  << " Parent: " << trj->GetParentID()
                  << " T:" << ttime
                  << " vtx:(" << start[0] << "," << start[1] << "," << start[2]
-                 << " dir:(" << dir[0] << "," << dir[1] << "," << dir[2]
-                 << " E:" << energy << G4endl;
+                 << ") dir:(" << dir[0] << "," << dir[1] << "," << dir[2]
+                 << ") E:" << energy << G4endl;
           wcsimrootevent->SetCaptureParticle(trj->GetParentID(), ipnu, ttime, start, dir, energy, id);
       }
     }

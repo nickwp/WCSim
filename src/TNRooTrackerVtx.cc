@@ -220,7 +220,6 @@ void NRooTrackerVtx::Init()
     OrigFileName  = new TObjString(""); 
     OrigTreeName  = new TObjString(""); 
     
-    EvtCode = 0;
     StdHepPdg = 0;
     StdHepStatus = 0;
     StdHepFd = 0;

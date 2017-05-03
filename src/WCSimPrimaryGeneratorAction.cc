@@ -261,6 +261,9 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
             G4cout << "End of File" << G4endl;
             return;
         }
+        
+        // Get the interaction mode
+        mode = fTmpRootrackerVtx->EvtCode->String().Atoi();
 
         // Get the neutrino direction
         xDir=fTmpRootrackerVtx->StdHepP4[0][0];

@@ -143,6 +143,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 	cylinderTank_PMTType->SetGuidance("Set the geometry configuration for the WC.");
 	cylinderTank_PMTType->SetGuidance("Available options are:\n"
 								   "PMT20inch\n"
+								   "PMT3inch\n"
 								   "PMT8inch\n"
 								   "PMT10inch\n"
 								   "PMT10inchHQE\n"
@@ -154,7 +155,8 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 	);
 	cylinderTank_PMTType->SetParameterName("cylinderTank_PMTType", false);
 	cylinderTank_PMTType->SetCandidates("PMT20inch "
-						     	        "PMT8inch "
+							            "PMT3inch "
+							            "PMT8inch "
 							            "PMT10inch "
 							            "PMT10inchHQE "
 							            "PMT12inchHQE "

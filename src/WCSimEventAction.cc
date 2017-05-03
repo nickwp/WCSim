@@ -384,7 +384,7 @@ void WCSimEventAction::EndOfEventAction(const G4Event* evt)
 	(WCSimTrajectory*)((*(evt->GetTrajectoryContainer()))[i]);
 
       if (trj->GetCharge() != 0.)
- 	trj->DrawTrajectory();
+ 	trj->DrawTrajectory(50);
     }
 
    G4cout << " Filling Root Event " << G4endl;
@@ -721,6 +721,7 @@ void WCSimEventAction::FillRootEvent(G4int event_id,
 
 	if (ngates)
 	{
+
 	  if ( ttime > WCTM->GetTriggerTime(0)+950. && WCTM->GetTriggerTime(1)+950. > ttime ) choose_event=1; 
 	  if ( ttime > WCTM->GetTriggerTime(1)+950. && WCTM->GetTriggerTime(2)+950. > ttime ) choose_event=2; 
 	  if (choose_event >= ngates) choose_event = ngates-1; // do not overflow the number of events
@@ -744,7 +745,7 @@ void WCSimEventAction::FillRootEvent(G4int event_id,
       }
       
 
-      if (detectorConstructor->SavePi0Info())
+      if (detectorConstructor->SavePi0Info() == true)
       {
 	G4cout<<"Pi0 parentType: " << parentType <<G4endl;
 	if (parentType == 111)

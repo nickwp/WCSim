@@ -297,7 +297,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
                 return;
             }
             //Convert coordinates
-            xPos = fTmpRootrackerVtx->EvtVtx[0];
+            xPos = fTmpRootrackerVtx->EvtVtx[0] - x_offset;
             yPos = fTmpRootrackerVtx->EvtVtx[1] - y_offset;
             zPos = fTmpRootrackerVtx->EvtVtx[2] - z_offset;
         }

@@ -179,14 +179,19 @@ G4VPhysicalVolume* WCSimDetectorConstruction::Construct()
   // Water Cherenkov Detector (WC) mother volume
   // WC Box, nice to turn on for x and y views to provide a frame:
 
-	  //G4RotationMatrix* rotationMatrix = new G4RotationMatrix;
-	  //rotationMatrix->rotateX(90.*deg);
-	  //rotationMatrix->rotateZ(90.*deg);
-
+  G4RotationMatrix* rotationMatrix = new G4RotationMatrix;
   G4ThreeVector genPosition = G4ThreeVector(0., 0., WCPosition);
+
+  if(isCylinder){ // Do this for now to make surface detector work, but should change to mac file option
+      rotationMatrix->rotateX(90.*deg);
+      rotationMatrix->rotateY(0.*deg);
+      rotationMatrix->rotateZ(0.*deg);
+  }
+
+  G4Transform3D transform(*rotationMatrix, genPosition);
+
   G4VPhysicalVolume* physiWCBox = 
-    new G4PVPlacement(0,
-		      genPosition,
+    new G4PVPlacement(transform,
 		      logicWCBox,
 		      "WCBox",
 		      logicExpHall,

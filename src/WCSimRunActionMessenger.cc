@@ -25,12 +25,17 @@ WCSimRunActionMessenger::WCSimRunActionMessenger(WCSimRunAction* WCSimRA)
   RooTracker->SetParameterName("SaveRooTracker",false);
   RooTracker->SetDefaultValue(false);
 
+  UseTimer = new G4UIcmdWithABool("/WCSimIO/Timer",this);
+  UseTimer->SetGuidance("Use a timer for runtime");
+  UseTimer->SetParameterName("UseTimer",true);
+  UseTimer->SetDefaultValue(false);
 }
 
 WCSimRunActionMessenger::~WCSimRunActionMessenger()
 {
   delete RootFile;
   delete RooTracker;
+  delete UseTimer;
   delete WCSimIODir;
 }
 
@@ -42,10 +47,15 @@ void WCSimRunActionMessenger::SetNewValue(G4UIcommand* command,G4String newValue
       WCSimRun->SetRootFileName(newValue);
       G4cout << "Output ROOT file set to " << newValue << G4endl;
     }
-
-  if ( command == RooTracker)
-  {
-    WCSimRun->SetSaveRooTracker(RooTracker->GetNewBoolValue(newValue));
-    if(newValue) G4cout << "Saving NEUT RooTracker information to output file"  << G4endl;
-  }
+  else if(command == UseTimer)
+    {
+      bool use = UseTimer->GetNewBoolValue(newValue);
+      WCSimRun->SetUseTimer(use);
+      G4cout << "WCSimRunAction timer " << (use ? "ENABLED" : "DISABLED") << G4endl;
+    }
+  else if ( command == RooTracker)
+    {
+      WCSimRun->SetSaveRooTracker(RooTracker->GetNewBoolValue(newValue));
+      if(newValue) G4cout << "Saving NEUT RooTracker information to output file"  << G4endl;
+    }
 }

@@ -25,6 +25,7 @@ class WCSimRunActionMessenger: public G4UImessenger
   G4UIdirectory*      WCSimIODir;
   G4UIcmdWithAString* RootFile;
   G4UIcmdWithABool* RooTracker;
+  G4UIcmdWithABool*   UseTimer;
 };
 
 #endif

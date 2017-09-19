@@ -150,12 +150,6 @@ void WCSimEventAction::EndOfEventAction(const G4Event* evt)
 
   G4int n_trajectories = 0;
   if (trajectoryContainer) n_trajectories = trajectoryContainer->entries();
-  
-  if(generatorAction->GetIsRooTrackerFileFinished()){
-    const G4Run* run;
-    GetRunAction()->EndOfRunAction(run);
-    exit(0);
-  }
 
   // ----------------------------------------------------------------------
   //  Get Event Information
@@ -422,6 +416,12 @@ void WCSimEventAction::EndOfEventAction(const G4Event* evt)
     generatorAction->SaveOptionsToOutput(wcsimopt);
     
     SavedOptions = true;
+  }
+
+  if(generatorAction->GetIsRooTrackerFileFinished()){
+      const G4Run* run;
+      GetRunAction()->EndOfRunAction(run);
+      exit(0);
   }
 }
 
@@ -730,18 +730,18 @@ void WCSimEventAction::FillRootEvent(G4int event_id,
 
 	wcsimrootevent= wcsimrootsuperevent->GetTrigger(choose_event);
 	wcsimrootevent->AddTrack(ipnu, 
-				  flag, 
-				  mass, 
-				  mommag, 
-				  energy,
-				  startvol, 
-				  stopvol, 
-				  dir, 
-				  pdir, 
-				  stop,
-				  start,
-				  parentType,
-				 ttime,id); 
+                                 flag, 
+                                 mass, 
+                                 mommag, 
+                                 energy,
+                                 startvol, 
+                                 stopvol, 
+                                 dir, 
+                                 pdir, 
+                                 stop,
+                                 start,
+                                 parentType,
+                                 ttime,id); 
       }
       
 

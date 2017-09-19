@@ -285,6 +285,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
         //loading events until one is found within the detector or there are
         //no more interaction to simulate for this event.
         //The current neut vector files do not correspond directly to the detector dimensions, so only keep those events within the detector
+/*
         while (sqrt(pow(xPos,2)+pow(zPos,2))*m > (myDetector->GetWCIDDiameter()/2. - 20*cm) || (fabs(yPos*m) > (myDetector->GetWCIDHeight()/2. - 20*cm))){
             //Load another event
             if (fEvNum<fNEntries){
@@ -301,6 +302,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
             yPos = fTmpRootrackerVtx->EvtVtx[1] - y_offset;
             zPos = fTmpRootrackerVtx->EvtVtx[2] - z_offset;
         }
+*/
         if(fIsRooTrackerOutputTree) fTmpRootrackerVtx =  (NRooTrackerVtx*) fRooTrackerVtxTCA->At(0);
         int* stdHepPdg = fIsRooTrackerOutputTree ? fTmpRootrackerVtx->StdHepPdg : fTmpRootrackerVtx->StdHepPdgTemp;
 

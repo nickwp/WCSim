@@ -75,9 +75,11 @@ WCSimPrimaryGeneratorAction::WCSimPrimaryGeneratorAction(
   useLaserEvt  = false;
   useGPSEvt    = false;
   useRootrackerEvt = false;
+  useSandEvt = false;
   
   fEvNum = 0;
   fInputRootrackerFile = NULL;
+  fInputSandFile = NULL;
   fNEntries = 1;
 }
 
@@ -92,6 +94,7 @@ WCSimPrimaryGeneratorAction::~WCSimPrimaryGeneratorAction()
     inputFile.close();
 
     if(useRootrackerEvt) delete fRooTrackerTree;
+    if(useSandEvt) delete h1000;
 
     delete particleGun;
     delete MyGPS;   //T. Akiri: Delete the GPS variable
@@ -432,6 +435,112 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       SetBeamDir(dir);
       SetBeamPDG(pdg);
     }
+  else if (useSandEvt)
+  {
+      if ( !fInputSandFile->IsOpen() )
+      {
+          G4cout << "Set a sand interaction file using the command /mygen/vecfile name"
+                 << G4endl;
+          exit(-1);
+      }
+      
+      // First loop until we find an event with a neutron entering or created in OD in this event
+      int currentEvent = -1;
+      bool neutronFound = false;
+      for(int tmpEvNum = fEvNum; !neutronFound; tmpEvNum++){
+          if(tmpEvNum>=fNEntries){
+              G4cout << "End of File" << G4endl;
+              fEvNum = tmpEvNum;
+              return;
+          }
+          h1000->GetEntry(tmpEvNum);
+          if(fEventId != currentEvent){
+              fEvNum = tmpEvNum;
+              currentEvent = fEventId;
+          }
+          for(int stateChange = 0; stateChange < fNStateChange; stateChange++){
+              if(fPid[stateChange] == 2112 && (fType[stateChange] == 74 || fType[stateChange] == 64 || fType[stateChange] == 4)) {
+                  neutronFound = true;
+                  break;
+              }
+          }
+      }
+      
+      //mode = 0;
+      // First simulate the incoming neutrino
+      xDir = fNuMomentum[0];
+      yDir = fNuMomentum[1];
+      zDir = fNuMomentum[2];
+      xPos = fEventVtx[0]/1000.;
+      yPos = fEventVtx[1]/1000.+2.;
+      zPos = fEventVtx[2]/1000.-15.5;
+      double momentumGeV = sqrt((xDir*xDir)+(yDir*yDir)+(zDir*zDir))*GeV;
+      double momentum = sqrt((xDir*xDir)+(yDir*yDir)+(zDir*zDir));
+      G4ThreeVector vtx = G4ThreeVector(xPos*m, yPos*m, zPos*m);
+      G4ThreeVector dir = G4ThreeVector(-xDir, -yDir, -zDir);
+      dir = dir*(momentumGeV/momentum);
+      G4ParticleDefinition *particle = particleTable->FindParticle(fNuFlavor);
+      particleGun->SetParticleDefinition(particle);
+      double kin_energy = momentumGeV;//fabs(fTmpRootrackerVtx->StdHepP4[i][3])*GeV - particleGun->GetParticleDefinition()->GetPDGMass();
+      particleGun->SetParticleEnergy(kin_energy);
+      particleGun->SetParticlePosition(vtx);
+      particleGun->SetParticleMomentumDirection(dir);
+      particleGun->GeneratePrimaryVertex(anEvent);
+      G4cout << "Incoming neutrino: " << particle->GetParticleName() << " vtx (" << xPos << "," << yPos << "," << zPos
+               << ") m  dir (" << -xDir << "," << -yDir << "," << -zDir << ")  KE: " << kin_energy << " MeV" << G4endl;
+      // Loop through particles until new event
+      double timeNeutronEnterOD = 99999999;
+      double timeNeutronExitOD = 99999999;
+      do{
+          h1000->GetEntry(fEvNum);
+          if(fEventId != currentEvent) break;
+          // Loop over state changes, only simulate if they enter or if created in OD
+          for(int stateChange = 0; stateChange < fNStateChange; stateChange++){
+              if(fType[stateChange] == 67 || fType[stateChange] == 76) continue; // ignore moves between air and sand
+              if((fType[stateChange] == 46 || fType[stateChange] == 47) && fPid[stateChange] == 2112 && (fPosition[stateChange][3]<timeNeutronExitOD))
+                  timeNeutronExitOD = fPosition[stateChange][3]; // track earliest time of any neutrons exiting OD
+              if(fType[stateChange] != 4 && fType[stateChange] != 64 && fType[stateChange] != 74) break; // ignore particles entirely if not created in OD or entering OD
+              // The sand simulation tracked neutrons through OD, but we need to re-simulate this with Gd, so ignore particles that come from neutrons after they enter OD.
+              // Impossible to do this perfectly since we don't know particles' parent but can try to guess based on timings
+              if(fType[stateChange] == 4 && fPosition[stateChange][3] > timeNeutronEnterOD) break; // ignore particles created in OD after any neutron enters OD
+              if(fType[stateChange] != 4 && fPosition[stateChange][3] > timeNeutronExitOD) break; // ignore all particles entering OD after any neutron has exited OD
+              particle = particleTable->FindParticle(fPid[stateChange]);
+              if(!particle) break; // particle that Geant can't find
+              xDir = fMomentum[stateChange][0]/1000.;
+              yDir = fMomentum[stateChange][1]/1000.;
+              zDir = fMomentum[stateChange][2]/1000.;
+              xPos = fPosition[stateChange][0]/1000.;
+              yPos = fPosition[stateChange][1]/1000.+2.;
+              zPos = fPosition[stateChange][2]/1000.-15.5;
+              momentumGeV=sqrt((xDir*xDir)+(yDir*yDir)+(zDir*zDir))*GeV;
+              momentum=sqrt((xDir*xDir)+(yDir*yDir)+(zDir*zDir));
+              vtx.setX(xPos*m);
+              vtx.setY(yPos*m);
+              vtx.setZ(zPos*m);
+              
+              dir.setX(xDir);
+              dir.setY(yDir);
+              dir.setZ(zDir);
+              
+              dir = dir*(momentumGeV/momentum);
+              
+              particleGun->SetParticleDefinition(particle);
+              G4double mass = particleGun->GetParticleDefinition()->GetPDGMass();
+              kin_energy = sqrt(momentumGeV*momentumGeV + mass*mass)-mass;
+              particleGun->SetParticleEnergy(kin_energy);
+              particleGun->SetParticlePosition(vtx);
+              particleGun->SetParticleTime(fPosition[stateChange][3]*ns);
+              particleGun->SetParticleMomentumDirection(dir);
+              particleGun->GeneratePrimaryVertex(anEvent);
+              G4cout << "Outgoing particle: " << particle->GetParticleName() << " vtx (" << xPos << "," << yPos << "," << zPos
+                     << ") m  time: " << fPosition[stateChange][3] << " ns  dir (" << -xDir << "," << -yDir << "," << -zDir
+                     << ")  KE: " << kin_energy << " MeV" << G4endl;
+              if(fPid[stateChange] == 2112 && (fPosition[stateChange][3] < timeNeutronEnterOD)) timeNeutronEnterOD = fPosition[stateChange][3];
+              break; // done with this particle
+          }
+          fEvNum++;
+      } while(fEvNum < fNEntries);
+  }
 }
 
 void WCSimPrimaryGeneratorAction::SaveOptionsToOutput(WCSimRootOptions * wcopt)
@@ -455,6 +564,8 @@ G4String WCSimPrimaryGeneratorAction::GetGeneratorTypeString()
     return "laser";
   else if(useRootrackerEvt)
     return "rooTrackerEvt";
+  else if(useSandEvt)
+    return "Sand";
   return "";
 }
 
@@ -518,6 +629,39 @@ void WCSimPrimaryGeneratorAction::OpenRootrackerFile(G4String fileName)
     fSettingsTree->SetBranchAddress("DetRadius",&fNuPrismRadius);
     fSettingsTree->SetBranchAddress("NuIdfdPos",fNuPlanePos);
 
+}
+
+void WCSimPrimaryGeneratorAction::OpenSandFile(G4String fileName)
+{
+    if (fInputSandFile) fInputSandFile->Delete();
+
+    fInputSandFile= TFile::Open(fileName.data());
+    if (!fInputSandFile){
+        G4cout << "Cannot open: " << fileName << G4endl;
+        exit(1);
+    }
+
+    h1000 = (TTree*) fInputSandFile->Get("h1000");
+
+    h1000->SetBranchAddress("EventId", &fEventId);
+    h1000->SetBranchAddress("EventVtx", fEventVtx);
+    h1000->SetBranchAddress("NuFlavor", &fNuFlavor);
+    h1000->SetBranchAddress("IntMaterial", &fIntMaterial);
+    h1000->SetBranchAddress("IntVolume", &fIntVolume);
+    h1000->SetBranchAddress("NuMomentum", fNuMomentum);
+    h1000->SetBranchAddress("NStateChange", &fNStateChange);
+    h1000->SetBranchAddress("Position", fPosition);
+    h1000->SetBranchAddress("Momentum", fMomentum);
+    h1000->SetBranchAddress("Pid", fPid);
+    h1000->SetBranchAddress("Type", fType);
+
+    fNEntries=h1000->GetEntries();
+    if (fNEntries==0)
+    {
+        G4cout << "No entries found in h1000 tree."
+               << G4endl;
+        exit(-1);
+    }
 }
 
 void WCSimPrimaryGeneratorAction::SetupBranchAddresses(NRooTrackerVtx* nrootrackervtx){

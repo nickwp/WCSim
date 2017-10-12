@@ -31,8 +31,9 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         void GeneratePrimaries(G4Event* anEvent);
         void SetupBranchAddresses(NRooTrackerVtx* nrootrackervtx);
         void OpenRootrackerFile(G4String fileName);
+        void OpenSandFile(G4String fileName);
         void CopyRootrackerVertex(NRooTrackerVtx* nrootrackervtx);
-        bool GetIsRooTrackerFileFinished(){return (fEvNum==fNEntries);}
+        bool GetIsRooTrackerFileFinished(){return (fEvNum>=fNEntries);}
 
         // Gun, laser & gps setting calls these functions to fill jhfNtuple and Root tree
         void SetVtx(G4ThreeVector i)     { vtx = i; };
@@ -77,6 +78,7 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         // Variables set by the messenger
         G4bool   useMulineEvt;
         G4bool   useRootrackerEvt;
+        G4bool   useSandEvt;
         G4bool   useGunEvt;
         G4bool   useLaserEvt;  //T. Akiri: Laser flag
         G4bool   useGPSEvt;
@@ -109,6 +111,7 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         int fEvNum;
         int fNEntries;
         TFile* fInputRootrackerFile;
+        TFile* fInputSandFile;
 
         // Pointers to Rootracker vertex objects
         // Temporary vertex that is saved if desired, according to WCSimIO macro option
@@ -119,15 +122,33 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         float fNuBeamAng;
         float fNuPlanePos[3];
 
+    // Sand input h1000 tree variables
+    TTree*   h1000;
+    Int_t    fEventId;
+    Float_t  fEventVtx[4];
+    Int_t    fIntMaterial;
+    Int_t    fIntVolume;
+    Int_t    fNuFlavor;
+    Float_t  fNuMomentum[3];
+    Int_t    fNStateChange;
+    Float_t  fPosition[20][4];   //[NStateChange]
+    Float_t  fMomentum[20][3];   //[NStateChange]
+    Int_t    fPid[20];   //[NStateChange]
+    Int_t    fType[20];   //[NStateChange]
+
     public:
 
         inline TFile* GetInputRootrackerFile(){ return fInputRootrackerFile;}
+        inline TFile* GetInputSandFile(){ return fInputSandFile;}
 
         inline void SetMulineEvtGenerator(G4bool choice) { useMulineEvt = choice; }
         inline G4bool IsUsingMulineEvtGenerator() { return useMulineEvt; }
 
         inline void SetRootrackerEvtGenerator(G4bool choice) { useRootrackerEvt = choice; }
         inline G4bool IsUsingRootrackerEvtGenerator() { return useRootrackerEvt; }
+
+        inline void SetSandEvtGenerator(G4bool choice) { useSandEvt = choice; }
+        inline G4bool IsUsingSandEvtGenerator() { return useSandEvt; }
 
         inline void SetGunEvtGenerator(G4bool choice) { useGunEvt = choice; }
         inline G4bool IsUsingGunEvtGenerator()  { return useGunEvt; }

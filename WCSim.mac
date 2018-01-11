@@ -28,8 +28,8 @@
 #/WCSim/WCgeom nuPRISM_mPMT
 /WCSim/WCgeom nuPRISMShort_mPMT
 # Set Gadolinium doping (concentration is in percent)
-#/WCSim/DopingConcentration 0.1
-#/WCSim/DopedWater false
+/WCSim/DopingConcentration 0.1
+/WCSim/DopedWater false
 /WCSim/Construct
 ## OR for single mPMT mode or updating mPMT parameters:
 #/control/execute macros/mPMT_nuPrism1.mac         ## mPMT options: mPMT_nuPrism1.mac and 2.mac
@@ -42,9 +42,9 @@
 # the total number of photons
 # On the detector side, the rest of QE are applied according to QE/QE_max
 # distribution. This option is in particular important for the WLS
-# 3. The last option means all the QE are applied at the detector
+# 3. The third option means all the QE are applied at the detector
 # Good for the low energy running.
-# 4. Switch off the QE, ie. set it at 100%
+# 4. Switch off the QE complety, ie. set it at 100%
 /WCSim/PMTQEMethod     Stacking_Only
 #/WCSim/PMTQEMethod     Stacking_And_SensitiveDetector
 #/WCSim/PMTQEMethod     SensitiveDetector_Only

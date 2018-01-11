@@ -42,8 +42,8 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 
         // These go with jhfNtuple
         G4int GetVecRecNumber(){return vecRecNumber;}
-        //G4int GetMode() {return mode;};
-        InteractionType_t GetMode() {return mode;};
+        G4int GetMode() {return mode;};
+        //InteractionType_t GetMode() {return mode;};
         G4int GetVtxVol() {return vtxvol;};
         G4ThreeVector GetVtx() {return vtx;}
         G4int GetNpar() {return npar;};
@@ -87,8 +87,8 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         G4double poissonPMTMean;
 
         // These go with jhfNtuple
-        //G4int mode;
-        InteractionType_t mode;
+        G4int mode;
+        //InteractionType_t mode;
         G4int vtxvol;
         G4ThreeVector vtx;
         G4int npar;
@@ -115,6 +115,9 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         TTree* fRooTrackerTree;
         TTree* fSettingsTree;
         NRooTrackerVtx* fTmpRootrackerVtx;
+        TClonesArray* fRooTrackerVtxTCA;
+        Int_t fNVtx;
+        bool fIsRooTrackerOutputTree;
         float fNuPrismRadius;
         float fNuBeamAng;
         float fNuPlanePos[3];

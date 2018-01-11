@@ -153,19 +153,12 @@ void WCSimEventAction::EndOfEventAction(const G4Event* evt)
   G4int n_trajectories = 0;
   if (trajectoryContainer) n_trajectories = trajectoryContainer->entries();
 
-  if(generatorAction->GetIsRooTrackerFileFinished()){
-      const G4Run* run;
-      GetRunAction()->EndOfRunAction(run);
-      exit(0);
-  }
-
   // ----------------------------------------------------------------------
   //  Get Event Information
   // ----------------------------------------------------------------------
 
   G4int         event_id = evt->GetEventID();
-  //G4int         mode     = generatorAction->GetMode();
-  InteractionType_t mode     = generatorAction->GetMode();
+  G4int         mode     = generatorAction->GetMode();
   G4ThreeVector vtx      = generatorAction->GetVtx();
   G4int         vtxvol   = WCSimEventFindStartingVolume(vtx);
   G4int         vecRecNumber = generatorAction->GetVecRecNumber();
@@ -492,6 +485,12 @@ void WCSimEventAction::EndOfEventAction(const G4Event* evt)
     
     SavedOptions = true;
   }
+
+  if(generatorAction->GetIsRooTrackerFileFinished()){
+      const G4Run* run;
+      GetRunAction()->EndOfRunAction(run);
+      exit(0);
+  }
 }
 
 G4int WCSimEventAction::WCSimEventFindStartingVolume(G4ThreeVector vtx)
@@ -506,7 +505,7 @@ G4int WCSimEventAction::WCSimEventFindStartingVolume(G4ThreeVector vtx)
 
   G4VPhysicalVolume* tmpVolume = tmpNavigator->LocateGlobalPointAndSetup(vtx);
   //  G4String       vtxVolumeName = tmpVolume->GetName();
-  vtxVolumeName = tmpVolume->GetName();                  //TF: class member now
+  vtxVolumeName = (tmpVolume) ? tmpVolume->GetName() : "UNKNOWN";                  //TF: class member now
 
 
   if ( vtxVolumeName == "outerTube" ||
@@ -1049,7 +1048,7 @@ void WCSimEventAction::FillFlatTree(G4int event_id,
   
   //point branched struct to the one filled here. 
   eventNtuple *thisNtuple = GetRunAction()->GetMyStruct(); 
-  thisNtuple->interaction_mode = jhfNtuple.mode;
+  //thisNtuple->interaction_mode = jhfNtuple.mode;
   strcpy(thisNtuple->vtxVolume,vtxVolumeName.c_str());  
   thisNtuple->vtx_x = jhfNtuple.vtx[0];
   thisNtuple->vtx_y = jhfNtuple.vtx[1];

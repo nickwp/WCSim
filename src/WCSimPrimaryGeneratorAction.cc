@@ -47,7 +47,7 @@ WCSimPrimaryGeneratorAction::WCSimPrimaryGeneratorAction(
   MyGPS = new G4GeneralParticleSource();
 
   // Initialize to zero
-  mode = UNKNOWN;    //0;
+  mode = 0;
   vtxvol = 0;
   vtx = G4ThreeVector(0.,0.,0.);
   nuEnergy = 0.;
@@ -148,7 +148,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	    // Read the nuance line (ignore value now)
 
 	    token = readInLine(inputFile, lineSize, inBuf);
-	    mode = BEAM;       //atoi(token[1]);    //break backwards compatibility, should deprecate Nuance though
+	    mode = atoi(token[1]);
 
 	    // Read the Vertex line
 	    token = readInLine(inputFile, lineSize, inBuf);
@@ -258,12 +258,16 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
         if (fEvNum<fNEntries){
             fRooTrackerTree->GetEntry(fEvNum);
             fSettingsTree->GetEntry(fEvNum);
+            if(fIsRooTrackerOutputTree) fTmpRootrackerVtx =  (NRooTrackerVtx*) fRooTrackerVtxTCA->At(0);
             fEvNum++;
         }
         else{
             G4cout << "End of File" << G4endl; 
             return; 
         }
+
+        // Get the interaction mode
+        mode = fTmpRootrackerVtx->EvtCode->String().Atoi();
 
         // Get the neutrino direction
         xDir=fTmpRootrackerVtx->StdHepP4[0][0];
@@ -285,7 +289,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
         //loading events until one is found within the detector or there are
         //no more interaction to simulate for this event.
         //The current neut vector files do not correspond directly to the detector dimensions, so only keep those events within the detector
-	while (sqrt(pow(xPos,2)+pow(zPos,2))*m > (myDetector->GetWCIDDiameter()/2. - 20*cm) || (abs(yPos*m - myDetector->GetWCIDVerticalPosition()) > (myDetector->GetWCIDHeight()/2. - 20*cm))){
+	/*while (sqrt(pow(xPos,2)+pow(zPos,2))*m > (myDetector->GetWCIDDiameter()/2. - 20*cm) || (abs(yPos*m - myDetector->GetWCIDVerticalPosition()) > (myDetector->GetWCIDHeight()/2. - 20*cm))){
             //Load another event
             if (fEvNum<fNEntries){
                 fRooTrackerTree->GetEntry(fEvNum);
@@ -301,6 +305,9 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
             yPos = fTmpRootrackerVtx->EvtVtx[1] - y_offset; 
             zPos = fTmpRootrackerVtx->EvtVtx[2] - z_offset;
         } 
+*/
+        if(fIsRooTrackerOutputTree) fTmpRootrackerVtx =  (NRooTrackerVtx*) fRooTrackerVtxTCA->At(0);
+        int* stdHepPdg = fIsRooTrackerOutputTree ? fTmpRootrackerVtx->StdHepPdg : fTmpRootrackerVtx->StdHepPdgTemp;
 
         //Generate particles
         //i = 0 is the neutrino
@@ -321,7 +328,8 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
         dir = dir*(momentumGeV/momentum);
 
-        particleGun->SetParticleDefinition(particleTable->FindParticle(fTmpRootrackerVtx->StdHepPdgTemp[0]));
+        G4ParticleDefinition *particle = particleTable->FindParticle(stdHepPdg[0]);
+        particleGun->SetParticleDefinition(particle);
         double kin_energy = momentumGeV;//fabs(fTmpRootrackerVtx->StdHepP4[i][3])*GeV - particleGun->GetParticleDefinition()->GetPDGMass();
         particleGun->SetParticleEnergy(kin_energy);
         particleGun->SetParticlePosition(vtx);
@@ -329,10 +337,12 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
         // Will want to include some beam time structure at some point, but not needed at the moment since we only simulate 1 interaction per events
         // particleGun->SetParticleTime(time);
         particleGun->GeneratePrimaryVertex(anEvent);  //Place vertex in stack
+        G4cout << "Incoming neutrino: " << particle->GetParticleName() << " vtx (" << xPos << "," << yPos << "," << zPos
+               << ") m  dir (" << -xDir << "," << -yDir << "," << -zDir << ")  KE: " << kin_energy << " GeV" << G4endl;
 
         // Now simulate the outgoing particles
         for (int i = 3; i < fTmpRootrackerVtx->StdHepN; i++){
-
+            if(fIsRooTrackerOutputTree && stdHepPdg[i]!=2112 && stdHepPdg[i]!=2212) continue; // Only simulate nucleons
             xDir=fTmpRootrackerVtx->StdHepP4[i][0];
             yDir=fTmpRootrackerVtx->StdHepP4[i][1];
             zDir=fTmpRootrackerVtx->StdHepP4[i][2];
@@ -350,9 +360,10 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
             dir = dir*(momentumGeV/momentum);
 
-            particleGun->SetParticleDefinition(particleTable->FindParticle(fTmpRootrackerVtx->StdHepPdgTemp[i]));
+            particle = particleTable->FindParticle(stdHepPdg[i]);
+            particleGun->SetParticleDefinition(particle);
 
-            double kin_energy = fabs(fTmpRootrackerVtx->StdHepP4[i][3])*GeV - particleGun->GetParticleDefinition()->GetPDGMass();
+            kin_energy = fabs(fTmpRootrackerVtx->StdHepP4[i][3])*GeV - particleGun->GetParticleDefinition()->GetPDGMass();
 
             particleGun->SetParticleEnergy(kin_energy);
             particleGun->SetParticlePosition(vtx);
@@ -360,6 +371,8 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
             // Will want to include some beam time structure at some point, but not needed at the moment since we only simulate 1 interaction per events
             // particleGun->SetParticleTime(time);
             particleGun->GeneratePrimaryVertex(anEvent);  //Place vertex in stack
+            G4cout << "Outgoing particle: " << particle->GetParticleName() << " vtx (" << xPos << "," << yPos << "," << zPos
+                   << ") m  dir (" << -xDir << "," << -yDir << "," << -zDir << ")  KE: " << kin_energy << " GeV" << G4endl;
         }
     }
 
@@ -374,8 +387,6 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
     G4ThreeVector dir  = P.unit();
     G4double E         = std::sqrt((P.dot(P))+(m*m));
-
-    mode            = PARTICLEGUN;
 
 //     particleGun->SetParticleEnergy(E);
 //     particleGun->SetParticlePosition(vtx);
@@ -400,7 +411,6 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       G4double E         = std::sqrt((P.dot(P))+(m*m));
       //std::cout << "Energy " << E << " eV " << std::endl;
 
-      mode            = LASER; //actually could also be particle gun here. Gps and laser will be separate soon!!
 
       SetVtx(vtx);
       SetBeamEnergy(E);
@@ -446,7 +456,7 @@ G4String WCSimPrimaryGeneratorAction::GetGeneratorTypeString()
   else if(useLaserEvt)
     return "laser";
   else if(useRootrackerEvt)
-    return "rooTrackerEvt";
+    return "rootracker";
   return "";
 }
 
@@ -497,14 +507,26 @@ void WCSimPrimaryGeneratorAction::OpenRootrackerFile(G4String fileName)
 
     fRooTrackerTree = (TTree*) fInputRootrackerFile->Get("nRooTracker");
     fSettingsTree = (TTree*) fInputRootrackerFile->Get("Settings");
-    if (!fRooTrackerTree){
-        G4cout << "File: " << fileName << " does not contain a Rootracker nRooTracker tree - please check you intend to process Rootracker events" << G4endl;
-        exit(1);
+    if (fRooTrackerTree){
+        fTmpRootrackerVtx = new NRooTrackerVtx();
+        SetupBranchAddresses(fTmpRootrackerVtx); //link fTmpRootrackerVtx and current input file
+        fIsRooTrackerOutputTree = false;
+    }
+    else{
+        fRooTrackerTree = (TTree*) fInputRootrackerFile->Get("fRooTrackerOutputTree");
+        if (!fRooTrackerTree){
+            G4cout << "File: " << fileName << " does not contain a Rootracker nRooTracker tree - please check you intend to process Rootracker events" << G4endl;
+            exit(1);
+        }
+        fTmpRootrackerVtx = new NRooTrackerVtx();
+        fRooTrackerTree->GetBranch("NRooTrackerVtx")->SetAutoDelete(kFALSE);
+        fRooTrackerVtxTCA = new TClonesArray("NRooTrackerVtx");
+        fRooTrackerTree->SetBranchAddress("NVtx", &fNVtx);
+        fRooTrackerTree->SetBranchAddress("NRooTrackerVtx", &fRooTrackerVtxTCA);
+        fIsRooTrackerOutputTree = true;
     }
     fNEntries=fRooTrackerTree->GetEntries();
 
-    fTmpRootrackerVtx = new NRooTrackerVtx();
-    SetupBranchAddresses(fTmpRootrackerVtx); //link fTmpRootrackerVtx and current input file
 
     fSettingsTree->SetBranchAddress("NuBeamAng",&fNuBeamAng);
     fSettingsTree->SetBranchAddress("DetRadius",&fNuPrismRadius);

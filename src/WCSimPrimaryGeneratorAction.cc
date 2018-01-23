@@ -271,8 +271,10 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
         zDir=fTmpRootrackerVtx->StdHepP4[0][2];
 
         // Calculate offset from neutrino generation plane to centre of nuPRISM detector (in metres)
-        double z_offset = fNuPlanePos[2]/100.0 + fNuPrismRadius;
-        double y_offset = 0;//(fNuPrismRadius/zDir)*yDir;
+        // centre of detector is 14 m upstream of centre of original sand geometry
+        double z_offset = fNuPlanePos[2]/100.0 + 14.0;
+        // surface is at 1.57 m in NEUT coordinate system, we use WCIDVerticalPosition as depth of top of detector below surface
+        double y_offset = 1.57 - myDetector->GetWCIDVerticalPosition() - 0.5*myDetector->GetWCIDHeight() - 1.0;
       	double x_offset = fNuPlanePos[0]/100.0;
 
 
@@ -285,7 +287,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
         //loading events until one is found within the detector or there are
         //no more interaction to simulate for this event.
         //The current neut vector files do not correspond directly to the detector dimensions, so only keep those events within the detector
-	while (sqrt(pow(xPos,2)+pow(zPos,2))*m > (myDetector->GetWCIDDiameter()/2. - 20*cm) || (abs(yPos*m - myDetector->GetWCIDVerticalPosition()) > (myDetector->GetWCIDHeight()/2. - 20*cm))){
+	/*while (sqrt(pow(xPos,2)+pow(zPos,2))*m > (myDetector->GetWCIDDiameter()/2. - 20*cm) || (abs(yPos*m) > (myDetector->GetWCIDHeight()/2. - 20*cm))){
             //Load another event
             if (fEvNum<fNEntries){
                 fRooTrackerTree->GetEntry(fEvNum);
@@ -300,7 +302,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
             xPos = fTmpRootrackerVtx->EvtVtx[0] - x_offset;
             yPos = fTmpRootrackerVtx->EvtVtx[1] - y_offset; 
             zPos = fTmpRootrackerVtx->EvtVtx[2] - z_offset;
-        } 
+        }*/ 
 
         //Generate particles
         //i = 0 is the neutrino

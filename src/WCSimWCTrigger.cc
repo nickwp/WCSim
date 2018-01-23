@@ -249,7 +249,7 @@ void WCSimWCTriggerBase::AlgNDigits(WCSimWCDigitsCollection* WCDCPMT, bool remov
 
 #ifdef WCSIMWCTRIGGER_VERBOSE
     if(n_digits)
-      G4cout << n_digits << " digits found in 200nsec trigger window ["
+      G4cout << n_digits << " digits found in " << ndigitsWindow << "nsec trigger window ["
 	     << window_start_time << ", " << window_start_time + ndigitsWindow
 	     << "]. Threshold is: " << this_ndigitsThreshold << G4endl;
 #endif

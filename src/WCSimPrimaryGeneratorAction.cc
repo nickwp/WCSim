@@ -321,7 +321,8 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
         dir = dir*(momentumGeV/momentum);
 
-        particleGun->SetParticleDefinition(particleTable->FindParticle(fTmpRootrackerVtx->StdHepPdgTemp[0]));
+        G4ParticleDefinition *particle = particleTable->FindParticle(fTmpRootrackerVtx->StdHepPdgTemp[0]);
+        particleGun->SetParticleDefinition(particle);
         double kin_energy = momentumGeV;//fabs(fTmpRootrackerVtx->StdHepP4[i][3])*GeV - particleGun->GetParticleDefinition()->GetPDGMass();
         particleGun->SetParticleEnergy(kin_energy);
         particleGun->SetParticlePosition(vtx);
@@ -329,6 +330,8 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
         // Will want to include some beam time structure at some point, but not needed at the moment since we only simulate 1 interaction per events
         // particleGun->SetParticleTime(time);
         particleGun->GeneratePrimaryVertex(anEvent);  //Place vertex in stack
+        G4cout << "Incoming neutrino: " << particle->GetParticleName() << " vtx (" << xPos << "," << yPos << "," << zPos
+               << ") m  dir (" << -xDir << "," << -yDir << "," << -zDir << ")  KE: " << kin_energy << " GeV" << G4endl;
 
         // Now simulate the outgoing particles
         for (int i = 3; i < fTmpRootrackerVtx->StdHepN; i++){
@@ -350,7 +353,8 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
             dir = dir*(momentumGeV/momentum);
 
-            particleGun->SetParticleDefinition(particleTable->FindParticle(fTmpRootrackerVtx->StdHepPdgTemp[i]));
+            particle = particleTable->FindParticle(fTmpRootrackerVtx->StdHepPdgTemp[i]);
+            particleGun->SetParticleDefinition(particle);
 
             double kin_energy = fabs(fTmpRootrackerVtx->StdHepP4[i][3])*GeV - particleGun->GetParticleDefinition()->GetPDGMass();
 
@@ -360,6 +364,8 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
             // Will want to include some beam time structure at some point, but not needed at the moment since we only simulate 1 interaction per events
             // particleGun->SetParticleTime(time);
             particleGun->GeneratePrimaryVertex(anEvent);  //Place vertex in stack
+            G4cout << "Outgoing particle: " << particle->GetParticleName() << " vtx (" << xPos << "," << yPos << "," << zPos
+                   << ") m  dir (" << -xDir << "," << -yDir << "," << -zDir << ")  KE: " << kin_energy << " GeV" << G4endl;
         }
     }
 

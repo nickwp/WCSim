@@ -506,7 +506,7 @@ G4int WCSimEventAction::WCSimEventFindStartingVolume(G4ThreeVector vtx)
 
   G4VPhysicalVolume* tmpVolume = tmpNavigator->LocateGlobalPointAndSetup(vtx);
   //  G4String       vtxVolumeName = tmpVolume->GetName();
-  vtxVolumeName = tmpVolume->GetName();                  //TF: class member now
+  vtxVolumeName = (tmpVolume) ? tmpVolume->GetName() : "UNKNOWN";                  //TF: class member now
 
 
   if ( vtxVolumeName == "outerTube" ||

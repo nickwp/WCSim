@@ -27,7 +27,7 @@
 #Use mPMTs settings (uncomment/delete the above)
 #/WCSim/WCgeom nuPRISM_mPMT
 /WCSim/WCgeom nuPRISMShort_mPMT
-/WCSim/nuPRISM/SetDetectorVerticalPosition 20 m
+/WCSim/nuPRISM/SetDetectorVerticalPosition 43.07 m
 # Set Gadolinium doping (concentration is in percent)
 /WCSim/DopingConcentration 0.1
 /WCSim/DopedWater true
@@ -105,12 +105,12 @@
 # Or you can use the G4 Particle Gun
 # for a full list of /gun/ commands see:
 # http://geant4.web.cern.ch/geant4/G4UsersDocuments/UsersGuides/ForApplicationDeveloper/html/Control/UIcommands/_gun_.html
-/mygen/generator gun
-/gun/particle e-
+#/mygen/generator gun
+#/gun/particle e-
 #/gun/particle pi0
-/gun/energy 500 MeV
-/gun/direction 1 0 0
-/gun/position 0 0 0  
+#/gun/energy 500 MeV
+#/gun/direction 1 0 0
+#/gun/position 0 0 0  
 
 # Or you can use the G4 General Particle Source
 # you can do a lot more with this than a monoenergetic, monodirectional, single-particle gun
@@ -139,6 +139,9 @@
 #/gps/ang/minphi 0 deg
 #/gps/ang/maxphi 360 deg
 
+/mygen/generator rootracker
+/mygen/vecfile /data/hyperk/E61/sand/vectors/genev_E61bottom_1.root
+
 ##### NEW
 /Tracking/fractionOpticalPhotonsToDraw 0.0
 
@@ -147,7 +150,7 @@
 
 ## Boolean to select whether to save the NEUT RooTracker vertices in the output file, provided you used
 ## a NEUT vector file as input
-/WCSimIO/SaveRooTracker 0
+/WCSimIO/SaveRooTracker 1
 
-/run/beamOn 10
+/run/beamOn 100
 #exit

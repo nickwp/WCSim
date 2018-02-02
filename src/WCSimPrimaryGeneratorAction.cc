@@ -274,7 +274,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
         // centre of detector is 14 m upstream of centre of original sand geometry
         double z_offset = fNuPlanePos[2]/100.0 + 14.0;
         // surface is at 1.57 m in NEUT coordinate system, we use WCIDVerticalPosition as depth of top of detector below surface
-        double y_offset = 1.57 - myDetector->GetWCIDVerticalPosition() - 0.5*myDetector->GetWCIDHeight() - 1.0;
+        double y_offset = 1.57 - myDetector->GetWCIDVerticalPosition()/m - 0.5*myDetector->GetWCIDHeight()/m - 1.0;
       	double x_offset = fNuPlanePos[0]/100.0;
 
 
@@ -333,7 +333,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
         // particleGun->SetParticleTime(time);
         particleGun->GeneratePrimaryVertex(anEvent);  //Place vertex in stack
         G4cout << "Incoming neutrino: " << particle->GetParticleName() << " vtx (" << xPos << "," << yPos << "," << zPos
-               << ") m  dir (" << -xDir << "," << -yDir << "," << -zDir << ")  KE: " << kin_energy << " GeV" << G4endl;
+               << ") m  dir (" << xDir << "," << yDir << "," << zDir << ")  KE: " << kin_energy << " GeV" << G4endl;
 
         // Now simulate the outgoing particles
         for (int i = 3; i < fTmpRootrackerVtx->StdHepN; i++){
@@ -367,7 +367,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
             // particleGun->SetParticleTime(time);
             particleGun->GeneratePrimaryVertex(anEvent);  //Place vertex in stack
             G4cout << "Outgoing particle: " << particle->GetParticleName() << " vtx (" << xPos << "," << yPos << "," << zPos
-                   << ") m  dir (" << -xDir << "," << -yDir << "," << -zDir << ")  KE: " << kin_energy << " GeV" << G4endl;
+                   << ") m  dir (" << xDir << "," << yDir << "," << zDir << ")  KE: " << kin_energy << " GeV" << G4endl;
         }
     }
 

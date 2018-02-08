@@ -27,7 +27,8 @@
 #Use mPMTs settings (uncomment/delete the above)
 #/WCSim/WCgeom nuPRISM_mPMT
 /WCSim/WCgeom nuPRISMShort_mPMT
-/WCSim/nuPRISM/SetDetectorVerticalPosition 43.07 m
+/WCSim/nuPRISM/SetDetectorVerticalPosition 0.0 m
+#/WCSim/nuPRISM/SetDetectorVerticalPosition 43.07 m
 # Set Gadolinium doping (concentration is in percent)
 /WCSim/DopingConcentration 0.1
 /WCSim/DopedWater true

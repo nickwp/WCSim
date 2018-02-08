@@ -444,23 +444,40 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
           exit(-1);
       }
       
-      // First loop until we find an event with a neutron entering or created in OD in this event
+      double z_offset = - 14.0*m; // detector centre is 14 m downstream of (0,0,0) in sand sim coord system
+      double y_offset = - 25.95*m // Surface is 25.95 m above (0,0,0) in sand sim coord system
+                        + myDetector->GetWCIDHeight()/2.-1.0*m // Half ID length and OD length
+                        + myDetector->GetWCIDVerticalPosition(); // Depth below surface
+      
+      // First loop until we find an event with a particle entering or created in OD in this event
       int currentEvent = -1;
-      bool neutronFound = false;
-      for(int tmpEvNum = fEvNum; !neutronFound; tmpEvNum++){
+      bool found = false;
+      bool skipEvent = false;
+      for(int tmpEvNum = fEvNum; !found; tmpEvNum++){
           if(tmpEvNum>=fNEntries){
               G4cout << "End of File" << G4endl;
               fEvNum = tmpEvNum;
               return;
           }
           h1000->GetEntry(tmpEvNum);
+          if(skipEvent) continue;
           if(fEventId != currentEvent){
               fEvNum = tmpEvNum;
               currentEvent = fEventId;
+              //if(fIntVolume == 1) continue; // Skip events where neutrino interaction was inside ID, these are not sand background
+              // IntVolume is buggy/unreliable, so use coords instead for now
+              double x = fEventVtx[0] * mm;
+              double y = fEventVtx[1] * mm + y_offset;
+              double z = fEventVtx[2] * mm + z_offset;
+              double r = sqrt(x * x + z * z);
+              if(fabs(y) < myDetector->GetWCIDHeight() / 2. && r < myDetector->GetWCIDDiameter() / 2.){
+                  skipEvent = true;
+                  continue;
+              }
           }
           for(int stateChange = 0; stateChange < fNStateChange; stateChange++){
-              if(fPid[stateChange] == 2112 && (fType[stateChange] == 74 || fType[stateChange] == 64 || fType[stateChange] == 4)) {
-                  neutronFound = true;
+              if((fType[stateChange]/10 >= 5 && fType[stateChange]%10 == 4) || (fType[stateChange] >= 2 && fType[stateChange] <= 4)) {
+                  found = true;
                   break;
               }
           }
@@ -472,8 +489,8 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       yDir = fNuMomentum[1];
       zDir = fNuMomentum[2];
       xPos = fEventVtx[0]/1000.;
-      yPos = fEventVtx[1]/1000.+2.;
-      zPos = fEventVtx[2]/1000.-15.5;
+      yPos = fEventVtx[1]/1000. + y_offset/m;
+      zPos = fEventVtx[2]/1000. + z_offset/m;
       double momentumGeV = sqrt((xDir*xDir)+(yDir*yDir)+(zDir*zDir))*GeV;
       double momentum = sqrt((xDir*xDir)+(yDir*yDir)+(zDir*zDir));
       G4ThreeVector vtx = G4ThreeVector(xPos*m, yPos*m, zPos*m);
@@ -491,27 +508,49 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       // Loop through particles until new event
       double timeNeutronEnterOD = 99999999;
       double timeNeutronExitOD = 99999999;
-      do{
-          h1000->GetEntry(fEvNum);
+      for(int entry = fEvNum; entry < fNEntries; entry++){
+          h1000->GetEntry(entry);
           if(fEventId != currentEvent) break;
+          // Loop to find earliest times of neutrons created in OD or entering / exiting the OD
+          for(int stateChange = 0; stateChange < fNStateChange; stateChange++){
+              Int_t type = fType[stateChange];
+              Int_t start = type / 10;
+              Int_t end = type % 10;
+              Float_t time = fPosition[stateChange][3];
+              if(((type >= 2 && type <= 4) || (start >= 5 && end <= 4)) && (time < timeNeutronEnterOD))
+                  timeNeutronEnterOD = time; // track earliest time of particles entering or created in OD
+              if((start<=4 && end>=5) && (time < timeNeutronExitOD))
+                  timeNeutronExitOD = time; // track earliest time of particles exiting OD
+
+          }
+      }
+      do{
+          h1000->GetEntry(fEvNum++);
+          if(fEventId != currentEvent) 
+              break;
+          Int_t type = fType[0];
+          Float_t time = fPosition[0][3];
+          if(type == 1 || (type/10)==1) continue; // discard particles created in ID or somehow start by moving out of ID
+          // The sand simulation tracked neutrons through OD, but we need to re-simulate, so ignore particles that come from particles that already entered OD
+          // Impossible to do this perfectly since we don't know particles' parent but can try to guess based on timings
+          if(((type >= 2 && type <= 4) || (type>=20 && type <=49)) && time > timeNeutronEnterOD) continue; // discard particles created in OD after a particle enters OD
+          if(((type > 4 && type < 10) || type>49) && time > timeNeutronExitOD) continue; // discard particles created outside OD after a particle has exited OD
           // Loop over state changes, only simulate if they enter or if created in OD
           for(int stateChange = 0; stateChange < fNStateChange; stateChange++){
-              if(fType[stateChange] == 67 || fType[stateChange] == 76) continue; // ignore moves between air and sand
-              if((fType[stateChange] == 46 || fType[stateChange] == 47) && fPid[stateChange] == 2112 && (fPosition[stateChange][3]<timeNeutronExitOD))
-                  timeNeutronExitOD = fPosition[stateChange][3]; // track earliest time of any neutrons exiting OD
-              if(fType[stateChange] != 4 && fType[stateChange] != 64 && fType[stateChange] != 74) break; // ignore particles entirely if not created in OD or entering OD
-              // The sand simulation tracked neutrons through OD, but we need to re-simulate this with Gd, so ignore particles that come from neutrons after they enter OD.
-              // Impossible to do this perfectly since we don't know particles' parent but can try to guess based on timings
-              if(fType[stateChange] == 4 && fPosition[stateChange][3] > timeNeutronEnterOD) break; // ignore particles created in OD after any neutron enters OD
-              if(fType[stateChange] != 4 && fPosition[stateChange][3] > timeNeutronExitOD) break; // ignore all particles entering OD after any neutron has exited OD
+              type = fType[stateChange];
+              int start = type / 10;
+              int end = type % 10;
+              time = fPosition[stateChange][3];
+              if(end >= 5) continue; // skip creation in or moves into air, sand, water above/below
+              if(type==1 || start==1) break; // just in case, check that it's not created in or moving from ID
               particle = particleTable->FindParticle(fPid[stateChange]);
               if(!particle) break; // particle that Geant can't find
               xDir = fMomentum[stateChange][0]/1000.;
               yDir = fMomentum[stateChange][1]/1000.;
               zDir = fMomentum[stateChange][2]/1000.;
               xPos = fPosition[stateChange][0]/1000.;
-              yPos = fPosition[stateChange][1]/1000.+2.;
-              zPos = fPosition[stateChange][2]/1000.-15.5;
+              yPos = fPosition[stateChange][1]/1000.+y_offset/m;
+              zPos = fPosition[stateChange][2]/1000.+z_offset/m;
               momentumGeV=sqrt((xDir*xDir)+(yDir*yDir)+(zDir*zDir))*GeV;
               momentum=sqrt((xDir*xDir)+(yDir*yDir)+(zDir*zDir));
               vtx.setX(xPos*m);
@@ -529,17 +568,15 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
               kin_energy = sqrt(momentumGeV*momentumGeV + mass*mass)-mass;
               particleGun->SetParticleEnergy(kin_energy);
               particleGun->SetParticlePosition(vtx);
-              particleGun->SetParticleTime(fPosition[stateChange][3]*ns);
+              particleGun->SetParticleTime(time * ns);
               particleGun->SetParticleMomentumDirection(dir);
               particleGun->GeneratePrimaryVertex(anEvent);
               G4cout << "Outgoing particle: " << particle->GetParticleName() << " vtx (" << xPos << "," << yPos << "," << zPos
-                     << ") m  time: " << fPosition[stateChange][3] << " ns  dir (" << -xDir << "," << -yDir << "," << -zDir
+                     << ") m  time: " << time << " ns  dir (" << -xDir << "," << -yDir << "," << -zDir
                      << ")  KE: " << kin_energy << " MeV" << G4endl;
-              if(fPid[stateChange] == 2112 && (fPosition[stateChange][3] < timeNeutronEnterOD)) timeNeutronEnterOD = fPosition[stateChange][3];
               break; // done with this particle
           }
-          fEvNum++;
-      } while(fEvNum < fNEntries);
+      } while(fEvNum<fNEntries);
   }
 }
 

@@ -446,7 +446,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       
       double z_offset = - 14.0*m; // detector centre is 14 m downstream of (0,0,0) in sand sim coord system
       double y_offset = - 25.95*m // Surface is 25.95 m above (0,0,0) in sand sim coord system
-                        + myDetector->GetWCIDHeight()/2.-1.0*m // Half ID length and OD length
+                        + myDetector->GetWCIDHeight()/2.+1.0*m // Half ID length and OD length
                         + myDetector->GetWCIDVerticalPosition(); // Depth below surface
       
       // First loop until we find an event with a particle entering or created in OD in this event
@@ -460,7 +460,6 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
               return;
           }
           h1000->GetEntry(tmpEvNum);
-          if(skipEvent) continue;
           if(fEventId != currentEvent){
               fEvNum = tmpEvNum;
               currentEvent = fEventId;
@@ -474,8 +473,11 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
                   skipEvent = true;
                   continue;
               }
+              else skipEvent = false;
           }
+          else if(skipEvent) continue;
           for(int stateChange = 0; stateChange < fNStateChange; stateChange++){
+              // Look for events with particle entering or created in OD
               if((fType[stateChange]/10 >= 5 && fType[stateChange]%10 == 4) || (fType[stateChange] >= 2 && fType[stateChange] <= 4)) {
                   found = true;
                   break;

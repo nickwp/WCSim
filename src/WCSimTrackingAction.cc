@@ -27,8 +27,8 @@ WCSimTrackingAction::WCSimTrackingAction()
   ParticleList.insert(-321); // kaon-
   ParticleList.insert(311); // kaon0
   ParticleList.insert(-311); // kaon0 bar
-    ParticleList.insert(11);
-    ParticleList.insert(-11);
+    //ParticleList.insert(11);
+    //ParticleList.insert(-11);
     ParticleList.insert(13);
     ParticleList.insert(-13);
   // don't put gammas there or there'll be too many
@@ -103,7 +103,8 @@ void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
     if( aTrack->GetParentID()==0 
 	|| ((creatorProcess!=0) && ProcessList.count(creatorProcess->GetProcessName()))
 	|| (ParticleList.count(aTrack->GetDefinition()->GetPDGEncoding()))
-	|| (aTrack->GetDefinition()->GetPDGEncoding()==22 && aTrack->GetTotalEnergy() > 1.0*MeV)
+        || (aTrack->GetDefinition()->GetPDGEncoding()==22 && aTrack->GetTotalEnergy() > 1.0*MeV)
+        || (abs(aTrack->GetDefinition()->GetPDGEncoding())==11 && aTrack->GetTotalEnergy() > 1.0*MeV)
       || (creatorProcess->GetProcessName() == "muMinusCaptureAtRest" && aTrack->GetTotalEnergy() > 1.0*MeV)
       )
     {

@@ -25,9 +25,9 @@
 #/WCSim/Construct
 
 #Use mPMTs settings (uncomment/delete the above)
-#/WCSim/WCgeom nuPRISM_mPMT
-/WCSim/WCgeom nuPRISMShort_mPMT
-/WCSim/nuPRISM/SetDetectorVerticalPosition 0.0 m
+/WCSim/WCgeom nuPRISM_mPMT
+#/WCSim/WCgeom nuPRISMShort_mPMT
+/WCSim/nuPRISM/SetDetectorVerticalPosition 20 m
 #/WCSim/nuPRISM/SetDetectorVerticalPosition 43.07 m
 # Set Gadolinium doping (concentration is in percent)
 /WCSim/DopingConcentration 0.1
@@ -146,6 +146,22 @@
 ##### NEW
 /Tracking/fractionOpticalPhotonsToDraw 0.0
 
+
+# /mygen/generator CRY
+# /CRY/input returnNeutrons 1
+# /CRY/input returnProtons 0
+# /CRY/input returnGammas 0
+# /CRY/input returnElectrons 0
+# /CRY/input returnPions 0
+# /CRY/input returnMuons 1
+# /CRY/input date 1-1-2025
+# /CRY/input latitude 36.
+# /CRY/input altitude 0
+# /CRY/input subboxLength 50
+# /CRY/input nParticlesMin 1
+# /CRY/input nParticlesMax 2
+# /CRY/update
+
 ## change the name of the output root file, default = wcsim.root
 /WCSimIO/RootFile wcsim_output.root
 
@@ -153,5 +169,5 @@
 ## a NEUT vector file as input
 /WCSimIO/SaveRooTracker 1
 
-/run/beamOn 100
+/run/beamOn 1
 #exit

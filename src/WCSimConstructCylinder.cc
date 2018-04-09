@@ -1078,13 +1078,34 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
   // add blacksheet to the border cells.
   // We can use the same logical volume as for the normal
   // barrel cells.
+  // NP: No, need to use new logical volume due to different Z (height)
+  // otherwise there is gap between cap and barrel blacksheets
   // ---------------------------------------------------------
 
+    G4double annulusBlackSheetZ[2] = {borderAnnulusZ[0], borderAnnulusZ[2]};
+    G4double annulusBlackSheetRmax[2] = {(WCIDRadius+WCBlackSheetThickness),
+                                         WCIDRadius+WCBlackSheetThickness};
+    G4double annulusBlackSheetRmin[2] = {(WCIDRadius),
+                                         WCIDRadius};
+    G4Polyhedra* solidWCBarrelBorderCellBlackSheet = new G4Polyhedra("WCBarrelBorderCellBlackSheet",
+                                                               -dPhi/2., // phi start
+                                                               dPhi, //total phi
+                                                               1, //NPhi-gon
+                                                               2,
+                                                               annulusBlackSheetZ,
+                                                               annulusBlackSheetRmin,
+                                                               annulusBlackSheetRmax);
+    
+    G4LogicalVolume * logicWCBarrelBorderCellBlackSheet =
+            new G4LogicalVolume(solidWCBarrelBorderCellBlackSheet,
+                                G4Material::GetMaterial("Blacksheet"),
+                                "WCBarrelCellBlackSheet",
+                                0,0,0);
 
    G4VPhysicalVolume* physiWCBarrelBorderCellBlackSheet =
     new G4PVPlacement(0,
                       G4ThreeVector(0.,0.,0.),
-                      logicWCBarrelCellBlackSheet,
+                      logicWCBarrelBorderCellBlackSheet,
                       "WCBarrelCellBlackSheet",
                       logicWCBarrelBorderCell,
                       false,
@@ -1097,6 +1118,27 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
                                  physiWCBarrelBorderCellBlackSheet,
                                  OpWaterBSSurface);
 
+    if (Vis_Choice == "RayTracer"){
+
+        G4VisAttributes* WCBarrelBlackSheetCellVisAtt
+                = new G4VisAttributes(G4Colour(0.2,0.9,0.2)); // green color
+        WCBarrelBlackSheetCellVisAtt->SetForceSolid(true); // force the object to be visualized with a surface
+        WCBarrelBlackSheetCellVisAtt->SetForceAuxEdgeVisible(true); // force auxiliary edges to be shown
+        if(!debugMode)
+            logicWCBarrelBorderCellBlackSheet->SetVisAttributes(WCBarrelBlackSheetCellVisAtt);
+        else
+            logicWCBarrelBorderCellBlackSheet->SetVisAttributes(G4VisAttributes::Invisible);}
+
+    else {
+
+        G4VisAttributes* WCBarrelBlackSheetCellVisAtt
+                = new G4VisAttributes(G4Colour(0.2,0.9,0.2));
+        if(!debugMode)
+            logicWCBarrelBorderCellBlackSheet->SetVisAttributes(G4VisAttributes::Invisible);
+        else
+            logicWCBarrelBorderCellBlackSheet->SetVisAttributes(WCBarrelBlackSheetCellVisAtt);}
+    
+    
   // we have to declare the logical Volumes 
   // outside of the if block to access it later on 
   G4LogicalVolume* logicWCExtraTowerCell;

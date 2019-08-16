@@ -419,7 +419,8 @@ WCSimRootCherenkovHit *WCSimRootTrigger::AddCherenkovHit(Int_t tubeID,
 							 std::vector<Float_t> truetime,
 							 std::vector<Int_t> primParID,
 							 std::vector<Float_t> photonStartTime,
-							 std::vector<TVector3> photonStartPos)
+							 std::vector<TVector3> photonStartPos,
+							 std::vector<TVector3> photonEndPos)
 {
   // Add a new Cherenkov hit to the list of Cherenkov hits
   TClonesArray &cherenkovhittimes = *fCherenkovHitTimes;
@@ -427,10 +428,14 @@ WCSimRootCherenkovHit *WCSimRootTrigger::AddCherenkovHit(Int_t tubeID,
   for (unsigned int i =0;i<truetime.size();i++)
   {
     fCherenkovHitCounter++;
-    Float_t position[3];
-    for(int j=0; j<3; j++) position[j] = photonStartPos[i][j];
+    Float_t startPos[3];
+    Float_t endPos[3];
+    for(int j=0; j<3; j++){
+      startPos[j] = photonStartPos[i][j];
+      endPos[j] = photonEndPos[i][j];
+    }
     WCSimRootCherenkovHitTime *cherenkovhittime = 
-      new(cherenkovhittimes[fNcherenkovhittimes++]) WCSimRootCherenkovHitTime(truetime[i],primParID[i], photonStartTime[i], position);
+      new(cherenkovhittimes[fNcherenkovhittimes++]) WCSimRootCherenkovHitTime(truetime[i],primParID[i], photonStartTime[i], startPos, endPos);
   }
   
 #ifdef DEBUG
@@ -479,8 +484,8 @@ WCSimRootCherenkovHit::WCSimRootCherenkovHit(Int_t tubeID,
   fTotalPe[1] = totalPe[1];
 }
 
-WCSimRootCherenkovHitTime::WCSimRootCherenkovHitTime(Float_t truetime,
-						     Int_t primParID, Float_t photonStartTime, Float_t photonStartPos[3])
+WCSimRootCherenkovHitTime::WCSimRootCherenkovHitTime(Float_t truetime, Int_t primParID,
+						     Float_t photonStartTime, Float_t photonStartPos[3], Float_t photonEndPos[3])
 {
   // Create a WCSimRootCherenkovHit object and fill it with stuff
     fTruetime        = truetime; 
@@ -488,6 +493,7 @@ WCSimRootCherenkovHitTime::WCSimRootCherenkovHitTime(Float_t truetime,
     fPhotonStartTime = photonStartTime;
     for (int i=0;i<3;i++) {
         fPhotonStartPos[i] = photonStartPos[i];
+        fPhotonEndPos[i] = photonEndPos[i];
     }
 }
 

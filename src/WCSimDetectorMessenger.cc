@@ -24,10 +24,19 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			  "Cylinder_60x74_20inchBandL_40perCent\n"
 			  "Cylinder_12inchHPD_15perCent\n"
                           "HyperK\n"
+                          "HyperK_3inch\n"
+                          "HyperK_8inch\n"
+                          "HyperK_10inch\n"
+                          "HyperK_SKPMT\n"
+                          "HyperK_mPMT\n"
+                          "HyperK_HybridmPMT\n"
+                          "HyperK_HybridmPMT10PC\n"
+                          "HyperK_HybridFake\n"
 			  "EggShapedHyperK\n"
 			  "EggShapedHyperK_withHPD\n"
                           "nuPRISM\n"
                           "nuPRISM_mPMT\n"
+    			  "nuPRISMShort_mPMT\n"
 			  "Cylinder_60x74_3inchmPMT_14perCent\n"
 			  "Cylinder_60x74_3inchmPMT_40perCent\n"
 			  "Cylinder_60x74_3inch_14perCent\n"
@@ -44,10 +53,19 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
       			   "Cylinder_60x74_20inchBandL_40perCent\n"
 			   "Cylinder_12inchHPD_15perCent "
 			   "HyperK "
+			   "HyperK_3inch "
+			   "HyperK_8inch "
+			   "HyperK_10inch "
+			   "HyperK_SKPMT "
+			   "HyperK_mPMT "
+			   "HyperK_HybridmPMT "
+			   "HyperK_HybridmPMT10PC "
+			   "HyperK_HybridFake "
 			   "EggShapedHyperK "
 			   "EggShapedHyperK_withHPD "
                            "nuPRISM "
                            "nuPRISM_mPMT "
+			   "nuPRISMShort_mPMT "
 			   "Cylinder_60x74_3inchmPMT_14perCent "
 			   "Cylinder_60x74_3inchmPMT_40perCent "
 			   "Cylinder_60x74_3inch_14perCent "
@@ -68,6 +86,15 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			  );
   WCVisChoice->AvailableForStates(G4State_PreInit, G4State_Idle);
 
+  DopedWater = new G4UIcmdWithABool("/WCSim/DopedWater", this);
+  DopedWater->SetGuidance("Set whether water is doped with Gadolinium");
+  DopedWater->SetParameterName("DopedWater", false);
+  DopedWater->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+  DopingConcentration = new G4UIcmdWithADouble("/WCSim/DopingConcentration", this);
+  DopingConcentration->SetGuidance("Set percentage concentration Gadolinium doping");
+  DopingConcentration->SetParameterName("DopingConcentration", false);
+  DopingConcentration->AvailableForStates(G4State_PreInit, G4State_Idle);
 
   PMTSize = new G4UIcmdWithAString("/WCSim/WCPMTsize",this);
   PMTSize->SetGuidance("Set alternate PMT size for the WC (Must be entered after geometry details are set).");
@@ -76,13 +103,24 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
   PMTSize->SetCandidates("20inch 10inch");
   PMTSize->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-
-
+  PMTSize2 = new G4UIcmdWithAString("/WCSim/WCPMTsize2",this);//B.Q, for the second PMT type
+  PMTSize2->SetGuidance("Set alternate PMT size for the WC (Must be entered after geometry details are set).");
+  PMTSize2->SetGuidance("Available options 20inch 10inch");
+  PMTSize2->SetParameterName("PMTSize2", false);
+  PMTSize2->SetCandidates("20inch 10inch");
+  PMTSize2->AvailableForStates(G4State_PreInit, G4State_Idle);
+  
   SavePi0 = new G4UIcmdWithAString("/WCSim/SavePi0", this);
   SavePi0->SetGuidance("true or false");
   SavePi0->SetParameterName("SavePi0",false);
   SavePi0->SetCandidates("true false");
   SavePi0->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+  SaveCapture = new G4UIcmdWithAString("/WCSim/SaveCapture", this);
+  SaveCapture->SetGuidance("true or false");
+  SaveCapture->SetParameterName("SaveCapture",false);
+  SaveCapture->SetCandidates("true false");
+  SaveCapture->AvailableForStates(G4State_PreInit, G4State_Idle);
   
   
   PMTQEMethod = new G4UIcmdWithAString("/WCSim/PMTQEMethod", this);
@@ -182,6 +220,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 				    "BoxandLine20inchHQE "
 				    "BoxandLine12inchHQE "
 				    "PMT3inchR12199_02 "
+				    "PMT3inchR14374 "
 				    "PMT4inchR12199_02 "
 				    "PMT5inchR12199_02 "
 				    ); 
@@ -199,6 +238,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 				    "BoxandLine20inchHQE "
 				    "BoxandLine12inchHQE "
 				    "PMT3inchR12199_02 "
+				    "PMT3inchR14374 "
 				    "PMT4inchR12199_02 "
 				    "PMT5inchR12199_02 "
 				    ); 
@@ -235,7 +275,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
   mPMT_ID_reflector_height->SetUnitCategory("Length");
   mPMT_ID_reflector_height->SetDefaultUnit("mm");
   mPMT_ID_reflector_height->SetUnitCandidates("mm cm m");
-
+  
   mPMT_ID_reflector_z_offset = new G4UIcmdWithADoubleAndUnit("/WCSim/mPMT/reflectorZoffsetID",this);
   mPMT_ID_reflector_z_offset->SetGuidance("Set z position offset of reflector cone for each ID PMT.");
   mPMT_ID_reflector_z_offset->SetParameterName("reflectorZoffsetID", true);
@@ -286,8 +326,13 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 					   "SilGel "
 					   "Air " );
 
-
-
+  // B.Q: Add the hybrid configuration
+  SetHybridPMT = new G4UIcmdWithABool("/WCSim/mPMT/SetHybridPMT", this);
+  SetHybridPMT->SetGuidance("Set the possibility of having hybrid PMT types");
+  SetHybridPMT->SetGuidance("Should be 1 or 0");
+  SetHybridPMT->SetParameterName("HybridPMT", false);
+  //SetHybridPMT->SetCandidates();
+  SetHybridPMT->SetDefaultValue(false);
 
  // First, the PMT type
   SetPMTType = new G4UIcmdWithAString("/WCSim/nuPRISM/SetPMTType", this);
@@ -296,6 +341,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
           "PMT3inch\n"
           "PMT3inchGT\n"
           "PMT3inchR12199_02\n"
+          "PMT3inchR14374\n"
           "PMT5inch\n"
           "PMT8inch\n"
           "PMT10inchHQE\n"
@@ -304,7 +350,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
           "HPD20inchHQE\n"
           "PMT20inch\n");
   SetPMTType->SetParameterName("PMTType", false);
-  SetPMTType->SetCandidates("PMT3inch PMT3inchGT PMT3inchR12199_02 PMT5inch PMT8inch PMT10inchHQE PMT10inch PMT12inchHQE HPD20inchHQE PMT20inch");
+  SetPMTType->SetCandidates("PMT3inch PMT3inchGT PMT3inchR12199_02 PMT3inchR14374 PMT5inch PMT8inch PMT10inchHQE PMT10inch PMT12inchHQE HPD20inchHQE PMT20inch");
   SetPMTType->SetDefaultValue("PMT10inch");
 
   // Next, the PMT coverage
@@ -346,6 +392,7 @@ WCSimDetectorMessenger::~WCSimDetectorMessenger()
 {
   delete PMTConfig;
   delete SavePi0;
+  delete SaveCapture;
   delete PMTQEMethod;
   delete PMTCollEff;
   delete waterTank_Length;
@@ -356,6 +403,7 @@ WCSimDetectorMessenger::~WCSimDetectorMessenger()
   delete SetDetectorVerticalPosition;
   delete SetPMTCoverage;
   delete SetPMTType;
+  delete SetHybridPMT;
 
   delete tubeCmd;
   delete distortionCmd;
@@ -389,6 +437,22 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 		  WCSimDetector->Cylinder_12inchHPD_15perCent();
                 } else if ( newValue == "HyperK") {
 			WCSimDetector->SetHyperKGeometry();
+		} else if ( newValue == "HyperK_3inch") {
+			WCSimDetector->SetHyperK_3inchGeometry();
+		} else if ( newValue == "HyperK_8inch") {
+			WCSimDetector->SetHyperK_8inchGeometry();
+		} else if ( newValue == "HyperK_10inch") {
+			WCSimDetector->SetHyperK_10inchGeometry();
+		} else if ( newValue == "HyperK_SKPMT") {
+			WCSimDetector->SetHyperK_SKPMTGeometry();
+		} else if ( newValue == "HyperK_mPMT") {
+			WCSimDetector->SetHyperK_mPMTGeometry();
+		} else if ( newValue == "HyperK_HybridmPMT") {
+			WCSimDetector->SetHyperK_HybridmPMTGeometry();
+		} else if ( newValue == "HyperK_HybridmPMT10PC") {
+			WCSimDetector->SetHyperK_HybridmPMT10PCGeometry();
+		} else if ( newValue == "HyperK_HybridFake") {
+			WCSimDetector->SetHyperK_HybridFakeGeometry();
 		} else if ( newValue == "EggShapedHyperK") {
 		  WCSimDetector->SetIsEggShapedHyperK(true);
 		  WCSimDetector->SetEggShapedHyperKGeometry();
@@ -411,19 +475,33 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
                 } else if ( newValue == "nuPRISM_mPMT") {
 		  WCSimDetector->SetIsNuPrism(true);
 		  WCSimDetector->SetNuPrism_mPMTGeometry();
+                } else if ( newValue == "nuPRISMShort_mPMT") {
+		  WCSimDetector->SetIsNuPrism(true);
+		  WCSimDetector->SetNuPrismShort_mPMTGeometry();
 		} else
 		  G4cout << "That geometry choice is not defined!" << G4endl;
 	}
-  
+
 	if (command == SavePi0){
-	  G4cout << "Set the flag for saving pi0 info " << newValue << G4endl;
-	  if (newValue=="true"){
-	    WCSimDetector->SavePi0Info(true);
-	  }else if (newValue == "false"){
-	    WCSimDetector->SavePi0Info(false);
-	  }else{
-	    
-	  }
+		G4cout << "Set the flag for saving pi0 info " << newValue << G4endl;
+		if (newValue=="true"){
+			WCSimDetector->SavePi0Info(true);
+		}else if (newValue == "false"){
+			WCSimDetector->SavePi0Info(false);
+		}else{
+
+		}
+	}
+
+	if (command == SaveCapture){
+		G4cout << "Set the flag for saving neutron capture info " << newValue << G4endl;
+		if (newValue=="true"){
+			WCSimDetector->SaveCaptureInfo(true);
+		}else if (newValue == "false"){
+			WCSimDetector->SaveCaptureInfo(false);
+		}else{
+
+		}
 	}
 
 	if (command == PMTQEMethod){
@@ -480,7 +558,18 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 	    G4cout << "Not egg-shaped HyperK Geometry. Detector length unchanged." << G4endl;
 	  }
 	}
-	
+
+	if(command == DopedWater) {
+		G4cout << "Setting Gadolinium doping of water: " << newValue << G4endl;
+		WCSimDetector->SetDopedWater(DopedWater->GetNewBoolValue(newValue));
+	}
+
+
+	if(command == DopingConcentration) {
+		G4cout << "Setting Gadolinium doping concentration: " << newValue << "percent" << G4endl;
+            WCSimDetector->AddDopedWater(DopingConcentration->GetNewDoubleValue(newValue));
+	}
+
 	if(command == PMTSize) {
 		G4cout << "SET PMT SIZE" << G4endl;
 		if ( newValue == "20inch"){
@@ -489,6 +578,16 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 //			WCSimDetector->Set10inchPMTs();
 		}else
 			G4cout << "That PMT size is not defined!" << G4endl;	
+	}
+
+	if(command == PMTSize2) {
+	  G4cout << "SET PMT of TYPE 2 SIZE" << G4endl;
+	  if ( newValue == "20inch"){
+	    //			WCSimDetector->Set20inchPMTs();
+	  }else if (newValue == "10inch"){
+	    //			WCSimDetector->Set10inchPMTs();
+	  }else
+	    G4cout << "That PMT size is not defined!" << G4endl;	
 	}
 
 	if (command == mPMT_CylHeight){
@@ -574,7 +673,11 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 	if (command == mPMT_material_pmtAssembly){
 	  WCSimDetector->SetmPMT_MaterialPMTassembly(newValue);
 	}
-
+	if (command == SetHybridPMT){
+	  G4cout << "Set hybrid config = " << newValue << G4endl;
+	  WCSimDetector->SetHybridPMT(SetHybridPMT->GetNewBoolValue(newValue));
+	}
+	
 	// Customize nuPRISM tank setup
 	if( WCSimDetector->GetIsNuPrism()){
 	  if (command == SetPMTType) WCSimDetector->SetPMTType(newValue);

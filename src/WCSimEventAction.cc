@@ -138,6 +138,9 @@ void WCSimEventAction::BeginOfEventAction(const G4Event*)
 void WCSimEventAction::EndOfEventAction(const G4Event* evt)
 {
 
+  if(evt->IsAborted()){
+      return;
+  }
   // ----------------------------------------------------------------------
   //  Get Particle Table
   // ----------------------------------------------------------------------

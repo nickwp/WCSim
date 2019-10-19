@@ -171,6 +171,8 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         inline void FoundConversion(){ foundConversion = true; }
         inline void SetConversionProductParticle(int i, const G4ParticleDefinition *p) { conversionProductParticle[i] = p; }
         inline void SetConversionProductMomentum(int i, const G4ThreeVector& p) { conversionProductMomentum[i] = p; }
+        inline void SetNeedConversion(bool choice) { needConversion = choice; foundConversion = !choice; }
+        inline bool NeedsConversion() { return needConversion; }
 };
 
 #endif

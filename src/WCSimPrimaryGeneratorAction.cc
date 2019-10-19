@@ -434,7 +434,6 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       SetBeamDir(dir);
       SetBeamPDG(pdg);
 
-      needConversion = true;
       if(needConversion) {
           G4ThreeVector tmpDir(1, 0, 0);
           foundConversion = false;

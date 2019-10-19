@@ -23,7 +23,8 @@ G4int WCSimSteppingAction::n_photons_on_smallPMT = 0;
 
 void WCSimSteppingAction::UserSteppingAction(const G4Step* aStep)
 {
-  if(G4EventManager::GetEventManager()->GetConstCurrentEvent()->IsAborted())
+    const G4Event *event = G4EventManager::GetEventManager()->GetConstCurrentEvent();
+    if(event->IsAborted() || event->GetEventID() < 0)
       return;
   //DISTORTION must be used ONLY if INNERTUBE or INNERTUBEBIG has been defined in BidoneDetectorConstruction.cc
   

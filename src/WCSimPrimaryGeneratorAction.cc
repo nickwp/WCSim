@@ -462,7 +462,6 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       //particleGun->SetParticleEnergy();
 #endif
 
-      needConversion = true;
       if(needConversion) {
           G4ThreeVector tmpDir(1, 0, 0);
           foundConversion = false;

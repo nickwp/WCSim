@@ -204,6 +204,7 @@ void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
 
   WCSimPrimaryGeneratorAction *primaryGenerator = (WCSimPrimaryGeneratorAction *) (G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
   if(!primaryGenerator->IsConversionFound() && 
+     aTrack->GetTrackID() == primaryID &&
      aTrack->GetStep()->GetPostStepPoint()->GetProcessDefinedStep() &&
      aTrack->GetStep()->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() == "conv"){
       for(int i=0; i<2; i++){

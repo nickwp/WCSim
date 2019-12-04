@@ -81,8 +81,8 @@ WCSimPrimaryGeneratorAction::WCSimPrimaryGeneratorAction(
   fInputRootrackerFile = NULL;
   fNEntries = 1;
   
-  needConversion = false;
-  foundConversion = true;
+  needCapture = false;
+  foundCapture = true;
 }
 
 WCSimPrimaryGeneratorAction::~WCSimPrimaryGeneratorAction()
@@ -434,7 +434,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       SetBeamDir(dir);
       SetBeamPDG(pdg);
 
-      if(needConversion) {
+      if(needCapture) {
           G4PrimaryParticle *primaryParticle = anEvent->GetPrimaryVertex(0)->GetPrimary(0);
           G4ThreeVector tmpDir(1, 0, 0);
           G4ThreeVector tmpPos(0, 0, 0);
@@ -442,8 +442,8 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
           particleGun->SetParticleEnergy(primaryParticle->GetKineticEnergy());
           particleGun->SetParticlePosition(tmpPos);
           particleGun->SetParticleMomentumDirection(tmpDir);
-          foundConversion = false;
-          while (!foundConversion) {
+          foundCapture = false;
+          while (!foundCapture) {
               G4Event *tmpEvent = new G4Event(-1);
               particleGun->GeneratePrimaryVertex(tmpEvent);
               G4EventManager::GetEventManager()->ProcessOneEvent(tmpEvent);
@@ -454,19 +454,21 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
               G4ThreeVector rotationAxis = tmpDir.cross(newDir);
               rotationAxis = rotationAxis / rotationAxis.mag();
               double rotationAngle = acos(newDir.dot(tmpDir));
-              for (int i = 0; i < 2; i++) {
-                  conversionProductMomentum[i].rotate(rotationAngle, rotationAxis);
+              for (int i = 0; i < nCaptureProducts; i++) {
+                  captureProductMomentum[i].rotate(rotationAngle, rotationAxis);
               }
           }
-          primaryParticle->SetParticleDefinition(conversionProductParticle[0]);
-          primaryParticle->SetMomentum(conversionProductMomentum[0].getX(),
-                                       conversionProductMomentum[0].getY(),
-                                       conversionProductMomentum[0].getZ());
-          G4PrimaryParticle *secondProduct = new G4PrimaryParticle(conversionProductParticle[1],
-                                                                   conversionProductMomentum[1].getX(),
-                                                                   conversionProductMomentum[1].getY(),
-                                                                   conversionProductMomentum[1].getZ());
-          anEvent->GetPrimaryVertex(0)->SetPrimary(secondProduct);
+          primaryParticle->SetParticleDefinition(captureProductParticle[0]);
+          primaryParticle->SetMomentum(captureProductMomentum[0].getX(),
+                                       captureProductMomentum[0].getY(),
+                                       captureProductMomentum[0].getZ());
+          for (int i = 1; i < nCaptureProducts; i++) {
+              G4PrimaryParticle *nextProduct = new G4PrimaryParticle(captureProductParticle[1],
+                                                                     captureProductMomentum[1].getX(),
+                                                                     captureProductMomentum[1].getY(),
+                                                                     captureProductMomentum[1].getZ());
+              anEvent->GetPrimaryVertex(0)->SetPrimary(nextProduct);
+          }
       }
     }
 }

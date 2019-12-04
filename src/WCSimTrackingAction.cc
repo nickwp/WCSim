@@ -64,13 +64,13 @@ void WCSimTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
     fpTrackingManager->SetStoreTrajectory(false);
 
     WCSimPrimaryGeneratorAction *primaryGenerator = (WCSimPrimaryGeneratorAction *) (G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
-    if(!primaryGenerator->IsConversionFound()) {
+    if(!primaryGenerator->IsCaptureFound()) {
       if(aTrack->GetParentID()==0){
           primaryID = aTrack->GetTrackID();
       }
       else if(aTrack->GetParentID() == primaryID) {
-          if (aTrack->GetCreatorProcess()->GetProcessName() == "conv") {
-              primaryGenerator->FoundConversion();
+          if (aTrack->GetCreatorProcess()->GetProcessName() == "ncapt") {
+              primaryGenerator->FoundCapture();
           }
           G4EventManager::GetEventManager()->AbortCurrentEvent();
           G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetEventAborted();
@@ -198,13 +198,13 @@ void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
   }
 
   WCSimPrimaryGeneratorAction *primaryGenerator = (WCSimPrimaryGeneratorAction *) (G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
-  if(!primaryGenerator->IsConversionFound() && 
+  if(!primaryGenerator->IsCaptureFound() && 
      aTrack->GetTrackID() == primaryID &&
      aTrack->GetStep()->GetPostStepPoint()->GetProcessDefinedStep() &&
-     aTrack->GetStep()->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() == "conv"){
-      for(int i=0; i<2; i++){
-          primaryGenerator->SetConversionProductParticle(i, secondaries->at(i)->GetParticleDefinition());
-          primaryGenerator->SetConversionProductMomentum(i, secondaries->at(i)->GetMomentum());
+     aTrack->GetStep()->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() == "ncapt"){
+      size_t nSeco = secondaries->size();
+      for(int i=0; i<nSeco; i++){
+          primaryGenerator->AddCaptureProduct(secondaries->at(i)->GetParticleDefinition(), secondaries->at(i)->GetMomentum());
       }
   }
 }

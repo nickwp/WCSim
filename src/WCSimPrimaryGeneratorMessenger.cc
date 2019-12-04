@@ -15,10 +15,10 @@ WCSimPrimaryGeneratorMessenger::WCSimPrimaryGeneratorMessenger(WCSimPrimaryGener
   genCmd = new G4UIcmdWithAString("/mygen/generator",this);
   genCmd->SetGuidance("Select primary generator.");
 
-  genCmd->SetGuidance(" Available generators : muline, gun, laser, gps, rootracker, gamma-conversion");
+  genCmd->SetGuidance(" Available generators : muline, gun, laser, gps, rootracker, neutron-capture");
   genCmd->SetParameterName("generator",true);
   genCmd->SetDefaultValue("muline");
-  genCmd->SetCandidates("muline gun laser gps rootracker, gamma-conversion");
+  genCmd->SetCandidates("muline gun laser gps rootracker, neutron-capture");
 
   fileNameCmd = new G4UIcmdWithAString("/mygen/vecfile",this);
   fileNameCmd->SetGuidance("Select the file of vectors.");
@@ -83,7 +83,7 @@ void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String 
       myAction->SetRootrackerEvtGenerator(false);
       myAction->SetLaserEvtGenerator(false);
       myAction->SetGPSEvtGenerator(true);
-      myAction->SetNeedConversion(false);
+      myAction->SetNeedCapture(false);
     }
     else if ( newValue == "rootracker")   //M. Scott: Addition of Rootracker events
     {
@@ -93,14 +93,14 @@ void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String 
       myAction->SetLaserEvtGenerator(false);
       myAction->SetGPSEvtGenerator(false);
     }
-    else if ( newValue == "gamma-conversion")
+    else if ( newValue == "neutron-capture")
     {
       myAction->SetMulineEvtGenerator(false);
       myAction->SetRootrackerEvtGenerator(false);
       myAction->SetGunEvtGenerator(false);
       myAction->SetLaserEvtGenerator(false);
       myAction->SetGPSEvtGenerator(true);
-      myAction->SetNeedConversion(true);
+      myAction->SetNeedCapture(true);
     }
   }
 
@@ -150,7 +150,7 @@ G4String WCSimPrimaryGeneratorMessenger::GetCurrentValue(G4UIcommand* command)
     else if(myAction->IsUsingLaserEvtGenerator())
       { cv = "laser"; }   //T. Akiri: Addition of laser
     else if(myAction->IsUsingGPSEvtGenerator())
-      { cv = myAction->NeedsConversion() ? "gamma-conversion" : "gps"; }
+      { cv = myAction->NeedsCapture() ? "neutron-capture" : "gps"; }
     else if(myAction->IsUsingRootrackerEvtGenerator())
       { cv = "rootracker"; }   //M. Scott: Addition of Rootracker events
   }

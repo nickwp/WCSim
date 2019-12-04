@@ -120,10 +120,11 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         float fNuBeamAng;
         float fNuPlanePos[3];
         
-        bool needConversion;
-        bool foundConversion;
-        const G4ParticleDefinition * conversionProductParticle[2];
-        G4ThreeVector conversionProductMomentum[2];
+        bool needCapture;
+        bool foundCapture;
+        const G4ParticleDefinition * captureProductParticle[100];
+        G4ThreeVector captureProductMomentum[100];
+        int nCaptureProducts;
 
     public:
 
@@ -167,12 +168,19 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         inline void SetPoissonPMTMean(G4double val){ poissonPMTMean = val; }
         inline G4double GetPoissonPMTMean(){ return poissonPMTMean; }
         
-        inline bool IsConversionFound(){ return foundConversion; }
-        inline void FoundConversion(){ foundConversion = true; }
-        inline void SetConversionProductParticle(int i, const G4ParticleDefinition *p) { conversionProductParticle[i] = p; }
-        inline void SetConversionProductMomentum(int i, const G4ThreeVector& p) { conversionProductMomentum[i] = p; }
-        inline void SetNeedConversion(bool choice) { needConversion = choice; foundConversion = !choice; }
-        inline bool NeedsConversion() { return needConversion; }
+        inline bool IsCaptureFound(){ return foundCapture; }
+        inline void FoundCapture(){ foundCapture = true; }
+        inline void AddCaptureProduct(const G4ParticleDefinition *d, const G4ThreeVector& p) { 
+            captureProductParticle[nCaptureProducts] = d;
+            captureProductMomentum[nCaptureProducts] = p;
+            nCaptureProducts++;
+        }
+        inline void SetNeedCapture(bool choice) { 
+            needCapture = choice;
+            foundCapture = !choice;
+            nCaptureProducts *= !choice;
+        }
+        inline bool NeedsCapture() { return needCapture; }
 };
 
 #endif

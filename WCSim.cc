@@ -45,7 +45,7 @@ int main(int argc,char** argv)
 
   // Get the tuning parameters
   //hack B.Q
-  G4cout << "B.Q: Read argv[2], which should contains the tuning parameters" << G4endl;
+/*  G4cout << "B.Q: Read argv[2], which should contains the tuning parameters" << G4endl;
   G4String fileName2 = argv[2];
   file_exists(fileName2);
   if(fileName2 == "vis.mac"){
@@ -54,8 +54,9 @@ int main(int argc,char** argv)
   }
   G4String command2 = "/control/execute ";
   UI->ApplyCommand(command2+fileName2);
-  //file_exists("macros/tuning_parameters.mac");
-  //UI->ApplyCommand("/control/execute macros/tuning_parameters.mac");
+*/
+  file_exists("macros/tuning_parameters.mac");
+  UI->ApplyCommand("/control/execute macros/tuning_parameters.mac");
 
   // define random number generator parameters
   WCSimRandomParameters *randomparameters = new WCSimRandomParameters();
@@ -75,10 +76,10 @@ int main(int argc,char** argv)
 
   // Currently, default physics list is set to FTFP_BERT
   // The custom WCSim physics list option is removed in versions later than WCSim1.6.0
-  char * WCSIMDIR = getenv("WCSIMDIR");
+  //char * WCSIMDIR = getenv("WCSIMDIR");
   //G4cout << "B.Q: Read" << Form("/control/execute %s/macros/jobOptions.mac",WCSIMDIR) << G4endl;
-  file_exists(Form("%s/macros/jobOptions.mac",WCSIMDIR));
-  UI->ApplyCommand(Form("/control/execute %s/macros/jobOptions.mac",WCSIMDIR));
+  file_exists("macros/jobOptions.mac");
+  UI->ApplyCommand("/control/execute macros/jobOptions.mac");
 
   // Initialize the physics factory to register the selected physics.
   physFactory->InitializeList();

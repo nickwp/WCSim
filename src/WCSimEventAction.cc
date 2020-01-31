@@ -1653,7 +1653,7 @@ void WCSimEventAction::FillRootEventHybrid(G4int event_id,
 				      primaryParentID,
 				      photonStartTime,
 				      photonStartPos,
-				      photonEndPos));
+				      photonEndPos);
       smeartime.clear();
       truetime.clear();
       primaryParentID.clear();

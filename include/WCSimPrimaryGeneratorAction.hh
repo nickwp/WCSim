@@ -34,6 +34,11 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         void CopyRootrackerVertex(NRooTrackerVtx* nrootrackervtx);
         bool GetIsRooTrackerFileFinished(){return (fEvNum==fNEntries);}
 
+        void OpenSandSimFile(G4String fileName);
+        bool GetIsSandSimFileFinished(){return (fEvNumSand==fNEntriesSand+1);}
+
+
+
         // Gun, laser & gps setting calls these functions to fill jhfNtuple and Root tree
         void SetVtx(G4ThreeVector i)     { vtx = i; };
         void SetBeamEnergy(G4double i)   { beamenergy = i; };
@@ -80,6 +85,7 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         G4bool   useGunEvt;
         G4bool   useLaserEvt;  //T. Akiri: Laser flag
         G4bool   useGPSEvt;
+		G4bool	 useSandSimEvt;
         std::fstream inputFile;
         G4String vectorFileName;
         G4bool   GenerateVertexInRock;
@@ -108,7 +114,12 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         // Counters to read Rootracker event file
         int fEvNum;
         int fNEntries;
+
+		G4int fEvNumSand;
+		G4int fNEntriesSand;
+
         TFile* fInputRootrackerFile;
+		TFile *fInputSandSimFile;
 
         // Pointers to Rootracker vertex objects
         // Temporary vertex that is saved if desired, according to WCSimIO macro option
@@ -119,6 +130,14 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         float fNuBeamAng;
         float fNuPlanePos[3];
 
+		// For SandSim
+		TTree *fSandTree;
+		int		fNIDEntrng;
+		int		fIDEntrngPDG[1000];
+		float	fIDEntrngMom[1000];
+		float	fIDEntrngVtx[1000][4];
+		float	fIDEntrngDir[1000][3];
+
     public:
 
         inline TFile* GetInputRootrackerFile(){ return fInputRootrackerFile;}
@@ -128,6 +147,9 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 
         inline void SetRootrackerEvtGenerator(G4bool choice) { useRootrackerEvt = choice; }
         inline G4bool IsUsingRootrackerEvtGenerator() { return useRootrackerEvt; }
+
+        inline void SetSandSimEvtGenerator(G4bool choice) { useSandSimEvt = choice; }
+		inline G4bool IsUsingSandSimEvtGenerator(){ return useSandSimEvt; }
 
         inline void SetGunEvtGenerator(G4bool choice) { useGunEvt = choice; }
         inline G4bool IsUsingGunEvtGenerator()  { return useGunEvt; }

@@ -8,6 +8,7 @@
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4ThreeVector.hh"
+#include "G4RunManager.hh"
 #include "globals.hh"
 #include "Randomize.hh"
 #include <fstream>
@@ -75,10 +76,16 @@ WCSimPrimaryGeneratorAction::WCSimPrimaryGeneratorAction(
   useLaserEvt  = false;
   useGPSEvt    = false;
   useRootrackerEvt = false;
+  useSandSimEvt	=false;
   
   fEvNum = 0;
   fInputRootrackerFile = NULL;
   fNEntries = 1;
+
+  // For SandSim
+  fInputSandSimFile	=NULL;
+  fEvNumSand 		=0;
+  fNEntriesSand		=1;
 }
 
 WCSimPrimaryGeneratorAction::~WCSimPrimaryGeneratorAction()
@@ -92,6 +99,7 @@ WCSimPrimaryGeneratorAction::~WCSimPrimaryGeneratorAction()
     inputFile.close();
 
     if(useRootrackerEvt) delete fRooTrackerTree;
+	if(useSandSimEvt){ delete fSandTree; }
 
     delete particleGun;
     delete MyGPS;   //T. Akiri: Delete the GPS variable
@@ -370,6 +378,48 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
         }
     }
 
+///////////////////////////////////////////////////
+    else if (useSandSimEvt)
+	{
+		if( fEvNumSand<fNEntriesSand )
+		{
+			G4cout<<"_fEvNumSand_ :" << fEvNumSand <<G4endl;
+        	fSandTree->GetEntry(fEvNumSand);
+            fEvNumSand++;
+		}
+		else
+		{
+            G4cout <<" Exhausted all the entries " << G4endl; 
+            fEvNumSand++;
+            return; 
+		}
+
+		for(int i=0; i<fNIDEntrng; i++)		
+		{
+			particleGun->SetParticleDefinition(particleTable->FindParticle(fIDEntrngPDG[i]));
+			double mass=particleGun->GetParticleDefinition()->GetPDGMass();
+			double mom=fIDEntrngMom[i]*MeV;
+            double kin_energy = mom*mom + mass*mass; 
+			kin_energy=sqrt( kin_energy ) - mass;
+        	G4ThreeVector vtx = G4ThreeVector(0., 0., 0.);
+        	G4ThreeVector dir = G4ThreeVector(0., 0., 0.);
+			for(int j=0; j<3; j++)
+			{
+				vtx(j)=fIDEntrngVtx[i][j]*cm;
+				dir(j)=fIDEntrngDir[i][j];
+			}
+			double time=fIDEntrngVtx[i][3]*ns;
+ 
+            particleGun->SetParticleEnergy(kin_energy);
+            particleGun->SetParticlePosition(vtx);
+            particleGun->SetParticleMomentumDirection(dir);
+            particleGun->SetParticleTime(time);
+            particleGun->GeneratePrimaryVertex(anEvent);  //Place vertex in stack
+		}
+
+	}
+///////////////////////////////////////////////////
+
   else if (useGunEvt)
   {      // manual gun operation
     particleGun->GeneratePrimaryVertex(anEvent);
@@ -454,6 +504,8 @@ G4String WCSimPrimaryGeneratorAction::GetGeneratorTypeString()
     return "laser";
   else if(useRootrackerEvt)
     return "rooTrackerEvt";
+  else if(useSandSimEvt)
+    return "SandSimEvt";
   return "";
 }
 
@@ -490,6 +542,31 @@ vector<string> tokenize( string separators, string input )
     }
 
     return tokens;
+}
+
+void WCSimPrimaryGeneratorAction::OpenSandSimFile(G4String fileName)
+{
+    if (fInputSandSimFile){ fInputSandSimFile->Delete(); }
+
+    fInputSandSimFile = TFile::Open(fileName.data());
+    if (!fInputSandSimFile){ 
+        G4cout << "Cannot open: " << fileName << G4endl; 
+        exit(1);
+    }
+
+    fSandTree = (TTree*) fInputSandSimFile->Get("IDEntering");
+    if (!fSandTree){
+        G4cout << "File: " << fileName << " does not contain a SandSim IDEntering tree" << G4endl;
+        exit(1);
+    }
+    fNEntriesSand=fSandTree->GetEntries();
+
+	fSandTree->SetBranchAddress("NIDEntrng",		&fNIDEntrng);
+	fSandTree->SetBranchAddress("IDEntrngPDG",		fIDEntrngPDG);
+	fSandTree->SetBranchAddress("IDEntrngMom",		fIDEntrngMom);
+	fSandTree->SetBranchAddress("IDEntrngVtx",		fIDEntrngVtx);
+	fSandTree->SetBranchAddress("IDEntrngDir",		fIDEntrngDir);
+
 }
 
 void WCSimPrimaryGeneratorAction::OpenRootrackerFile(G4String fileName)

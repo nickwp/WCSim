@@ -15,10 +15,10 @@ WCSimPrimaryGeneratorMessenger::WCSimPrimaryGeneratorMessenger(WCSimPrimaryGener
   genCmd = new G4UIcmdWithAString("/mygen/generator",this);
   genCmd->SetGuidance("Select primary generator.");
 
-  genCmd->SetGuidance(" Available generators : muline, gun, laser, gps, rootracker");
+  genCmd->SetGuidance(" Available generators : muline, gun, laser, gps, rootracker, sandsim");
   genCmd->SetParameterName("generator",true);
   genCmd->SetDefaultValue("muline");
-  genCmd->SetCandidates("muline gun laser gps rootracker");
+  genCmd->SetCandidates("muline gun laser gps rootracker sandsim");
 
   fileNameCmd = new G4UIcmdWithAString("/mygen/vecfile",this);
   fileNameCmd->SetGuidance("Select the file of vectors.");
@@ -75,6 +75,7 @@ void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String 
       myAction->SetRootrackerEvtGenerator(false);
       myAction->SetLaserEvtGenerator(true);
       myAction->SetGPSEvtGenerator(false);
+      myAction->SetSandSimEvtGenerator(false);
     }
     else if ( newValue == "gps")
     {
@@ -83,6 +84,7 @@ void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String 
       myAction->SetRootrackerEvtGenerator(false);
       myAction->SetLaserEvtGenerator(false);
       myAction->SetGPSEvtGenerator(true);
+      myAction->SetSandSimEvtGenerator(false);
     }
     else if ( newValue == "rootracker")   //M. Scott: Addition of Rootracker events
     {
@@ -91,7 +93,18 @@ void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String 
       myAction->SetGunEvtGenerator(false);
       myAction->SetLaserEvtGenerator(false);
       myAction->SetGPSEvtGenerator(false);
+      myAction->SetSandSimEvtGenerator(false);
     }
+    else if ( newValue == "sandsim")   //M. Scott: Addition of Rootracker events
+    {
+      myAction->SetMulineEvtGenerator(false);
+      myAction->SetSandSimEvtGenerator(true);
+      myAction->SetRootrackerEvtGenerator(false);
+      myAction->SetGunEvtGenerator(false);
+      myAction->SetLaserEvtGenerator(false);
+      myAction->SetGPSEvtGenerator(false);
+    }
+
   }
 
   if( command == fileNameCmd )
@@ -100,6 +113,10 @@ void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String 
         if(myAction->IsUsingRootrackerEvtGenerator()){
             myAction->OpenRootrackerFile(newValue);
         }
+		else if( myAction->IsUsingSandSimEvtGenerator() )
+		{
+            myAction->OpenSandSimFile(newValue);
+		}
         else{
             myAction->OpenVectorFile(newValue);
         }
@@ -143,6 +160,8 @@ G4String WCSimPrimaryGeneratorMessenger::GetCurrentValue(G4UIcommand* command)
       { cv = "gps"; }
     else if(myAction->IsUsingRootrackerEvtGenerator())
       { cv = "rootracker"; }   //M. Scott: Addition of Rootracker events
+    else if(myAction->IsUsingSandSimEvtGenerator())
+      { cv = "sandsim"; }   //R. Akutsu: Addition of pre-processed SandSim events
   }
   
   return cv;

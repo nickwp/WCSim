@@ -126,6 +126,14 @@ void WCSimEventAction::CreateDAQInstances()
 
 void WCSimEventAction::BeginOfEventAction(const G4Event*)
 {
+  if(generatorAction->GetIsSandSimFileFinished()){
+	  G4cout<<" Ending the run " <<G4endl;
+      const G4Run* run;
+      GetRunAction()->EndOfRunAction(run);
+      exit(0);
+  }
+
+
   if(!ConstructedDAQClasses) {
     CreateDAQInstances();
 

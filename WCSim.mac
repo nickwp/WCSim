@@ -101,20 +101,20 @@
 #/mygen/vecfile inputvectorfile
 #/mygen/vecfile h2o.2km.001-009x3_G4.kin
 #/mygen/vecfile mu+.out
-#/mygen/generator sandsim
-#/mygen/vecfile /home/rakutsu/scratch/iwcd/sandsim/input_identering/all_000to099_np_sand_320ka_all_fluka2011_air000cm_oaa3p61.IDEntrng.root
+/mygen/generator sandsim
+/mygen/vecfile /project/rpp-blairt2k/prouse/hk/SandSim/process/test.root
 
 
 
 # Or you can use the G4 Particle Gun
 # for a full list of /gun/ commands see:
 # http://geant4.web.cern.ch/geant4/G4UsersDocuments/UsersGuides/ForApplicationDeveloper/html/Control/UIcommands/_gun_.html
-/mygen/generator gun
-/gun/particle e-
+#/mygen/generator gun
+#/gun/particle e-
 #/gun/particle pi0
-/gun/energy 500 MeV
-/gun/direction 1 0 0
-/gun/position 0 0 0  
+#/gun/energy 500 MeV
+#/gun/direction 1 0 0
+#/gun/position 0 0 0  
 
 # Or you can use the G4 General Particle Source
 # you can do a lot more with this than a monoenergetic, monodirectional, single-particle gun
@@ -156,5 +156,6 @@
 ## set a timer running on WCSimRunAction
 #/WCSimIO/Timer false
 
-/run/beamOn 10
+/run/beamOn 1000000000000
+
 #exit

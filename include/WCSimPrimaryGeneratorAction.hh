@@ -133,10 +133,10 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		// For SandSim
 		TTree *fSandTree;
 		int		fNIDEntrng;
-		int		fIDEntrngPDG[1000];
-		float	fIDEntrngMom[1000];
-		float	fIDEntrngVtx[1000][4];
-		float	fIDEntrngDir[1000][3];
+		int		fIDEntrngPDG[10000];
+		float	fIDEntrngMom[10000];
+		float	fIDEntrngVtx[10000][4];
+		float	fIDEntrngDir[10000][3];
 
     public:
 

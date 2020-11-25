@@ -17,25 +17,25 @@ WCSimTrackingAction::WCSimTrackingAction()
 {
 
   ProcessList.insert("Decay") ;                         // Michel e- from pi+ and mu+
-  ProcessList.insert("conv") ;                         // Products of gamma conversion
+//  ProcessList.insert("conv") ;                         // Products of gamma conversion
 
   //ProcessList.insert("muMinusCaptureAtRest") ;          // Includes Muon decay from K-shell: for Michel e- from mu0. This dominates/replaces the mu- decay (noticed when switching off this process in PhysicsList)                                                   // TF: IMPORTANT: ONLY USE FROM G4.9.6 onwards because buggy/double counting before.
   ////////// ToDo: switch ON the above when NuPRISM uses G4 >= 4.9.6
-  ProcessList.insert("nCapture");
+//  ProcessList.insert("nCapture");
 
 //   ProcessList.insert("conv");
   ParticleList.insert(111); // pi0
-  ParticleList.insert(211); // pion+
-  ParticleList.insert(-211);
-  ParticleList.insert(321);
-  ParticleList.insert(-321); // kaon-
-  ParticleList.insert(311); // kaon0
-  ParticleList.insert(-311); // kaon0 bar
+//  ParticleList.insert(211); // pion+
+//  ParticleList.insert(-211);
+//  ParticleList.insert(321);
+//  ParticleList.insert(-321); // kaon-
+//  ParticleList.insert(311); // kaon0
+//  ParticleList.insert(-311); // kaon0 bar
   // don't put gammas there or there'll be too many
 
   //TF: add protons and neutrons
-  ParticleList.insert(2212);
-  ParticleList.insert(2112);
+//  ParticleList.insert(2212);
+//  ParticleList.insert(2112);
 
   percentageOfCherenkovPhotonsToDraw = 0.0;
 
@@ -117,8 +117,8 @@ void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
     if( aTrack->GetParentID()==0 
 	|| ((creatorProcess!=0) && ProcessList.count(creatorProcess->GetProcessName()))
 	|| (ParticleList.count(aTrack->GetDefinition()->GetPDGEncoding()))
-	|| (aTrack->GetDefinition()->GetPDGEncoding()==22 && aTrack->GetTotalEnergy() > 1.0*MeV)
-      || (creatorProcess->GetProcessName() == "muMinusCaptureAtRest" && aTrack->GetTotalEnergy() > 1.0*MeV)
+//	|| (aTrack->GetDefinition()->GetPDGEncoding()==22 && aTrack->GetTotalEnergy() > 1.0*MeV)
+//      || (creatorProcess->GetProcessName() == "muMinusCaptureAtRest" && aTrack->GetTotalEnergy() > 1.0*MeV)
       )
     {
     // if so the track is worth saving
@@ -141,9 +141,9 @@ void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
     if (aTrack->GetDefinition()->GetPDGEncoding() == 22){
       // also use lazy evaluation of "or" here:
       if( aTrack->GetParentID() == 0  || // then this gamma has no creator process (eg. nRooTracker particles)
-	  pi0List.count(aTrack->GetParentID()) ||
-	  (creatorProcess->GetProcessName() == "nCapture") ||
-	  (creatorProcess->GetProcessName() == "NeutronInelastic")	  
+	  pi0List.count(aTrack->GetParentID()) //||
+//	  (creatorProcess->GetProcessName() == "nCapture") ||
+//	  (creatorProcess->GetProcessName() == "NeutronInelastic")	  
 	  )
 	anInfo->SetPrimaryParentID(aTrack->GetTrackID());  
     }

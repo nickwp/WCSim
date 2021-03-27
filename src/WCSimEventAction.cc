@@ -908,7 +908,7 @@ void WCSimEventAction::FillRootEvent(G4int event_id,
       //wcsimrootevent->SetTriggerInfo(WCTM->GetTriggerType(index),
       //			     WCTM->GetTriggerInfo(index));
       //Added by B.Q to keep track of he trigger, 2019/01/17
-      std::vector<G4double> triggerInfo = WCTM->GetTriggerInfo(index);
+      std::vector<G4float> triggerInfo = WCTM->GetTriggerInfo(index);
       triggerInfo.push_back(950.);
       triggerInfo.push_back(WCTM->GetTriggerTime(index));	
       wcsimrootevent->SetTriggerInfo(WCTM->GetTriggerType(index),triggerInfo);//Added by B.Q to keep track of he trigger, 2019/01/17
@@ -940,10 +940,10 @@ void WCSimEventAction::FillRootEvent(G4int event_id,
   int k;
   for (k=0;k<2;k++) // should be just 2
   {
-    double dir[3];
-    double pdir[3];
-    double stop[3];
-    double start[3];
+    float dir[3];
+    float pdir[3];
+    float stop[3];
+    float start[3];
     for (int l=0;l<3;l++)
     {
       dir[l]=jhfNtuple.dir[k][l];
@@ -981,10 +981,10 @@ void WCSimEventAction::FillRootEvent(G4int event_id,
   std::set<int> antipionList;
 
     // Pi0 specific variables
-    Double_t pi0Vtx[3];
+    Float_t pi0Vtx[3];
     Int_t   gammaID[2];
-    Double_t gammaE[2];
-    Double_t gammaVtx[2][3];
+    Float_t gammaE[2];
+    Float_t gammaVtx[2][3];
     Int_t   r = 0;
 
     G4int n_trajectories = 0;
@@ -1060,10 +1060,10 @@ void WCSimEventAction::FillRootEvent(G4int event_id,
       //      << id << " " << energy << "\n";
 
       // fill ntuple
-      double dir[3];
-      double pdir[3];
-      double stop[3];
-      double start[3];
+      float dir[3];
+      float pdir[3];
+      float stop[3];
+      float start[3];
       for (int l=0;l<3;l++)
       {
 	dir[l]= mom[l]/mommag; // direction 
@@ -1167,7 +1167,7 @@ void WCSimEventAction::FillRootEvent(G4int event_id,
     G4cout<<"RAW HITS"<<G4endl;
 #endif
     wcsimrootevent->SetNumTubesHit(WCDC_hits->entries());
-    std::vector<double> truetime, smeartime;
+    std::vector<float> truetime, smeartime;
     std::vector<int>   primaryParentID;
     std::vector<float> photonStartTime;
     std::vector<TVector3> photonStartPos;
@@ -1399,7 +1399,7 @@ void WCSimEventAction::FillRootEventHybrid(G4int event_id,
       //wcsimrootevent->SetTriggerInfo(WCTM->GetTriggerType(index),
       //			     WCTM->GetTriggerInfo(index));
       //Added by B.Q to keep track of he trigger, 2019/01/17
-      std::vector<G4double> triggerInfo = WCTM->GetTriggerInfo(index);
+      std::vector<G4float> triggerInfo = WCTM->GetTriggerInfo(index);
       triggerInfo.push_back(950.);
       triggerInfo.push_back(WCTM->GetTriggerTime(index));	
       wcsimrootevent->SetTriggerInfo(WCTM->GetTriggerType(index),triggerInfo);//Added by B.Q to keep track of he trigger, 2019/01/17
@@ -1431,10 +1431,10 @@ void WCSimEventAction::FillRootEventHybrid(G4int event_id,
   int k;
   for (k=0;k<2;k++) // should be just 2
   {
-    double dir[3];
-    double pdir[3];
-    double stop[3];
-    double start[3];
+    float dir[3];
+    float pdir[3];
+    float stop[3];
+    float start[3];
     for (int l=0;l<3;l++)
     {
       dir[l]=jhfNtuple.dir[k][l];
@@ -1472,10 +1472,10 @@ void WCSimEventAction::FillRootEventHybrid(G4int event_id,
   std::set<int> antipionList;
 
     // Pi0 specific variables
-    Double_t pi0Vtx[3];
+    Float_t pi0Vtx[3];
     Int_t   gammaID[2];
-    Double_t gammaE[2];
-    Double_t gammaVtx[2][3];
+    Float_t gammaE[2];
+    Float_t gammaVtx[2][3];
     Int_t   r = 0;
 
     G4int n_trajectories = 0;
@@ -1551,10 +1551,10 @@ void WCSimEventAction::FillRootEventHybrid(G4int event_id,
       //      << id << " " << energy << "\n";
 
       // fill ntuple
-      double dir[3];
-      double pdir[3];
-      double stop[3];
-      double start[3];
+      float dir[3];
+      float pdir[3];
+      float stop[3];
+      float start[3];
       for (int l=0;l<3;l++)
       {
 	dir[l]= mom[l]/mommag; // direction 
@@ -1658,7 +1658,7 @@ void WCSimEventAction::FillRootEventHybrid(G4int event_id,
     G4cout<<"RAW HITS"<<G4endl;
 #endif
     wcsimrootevent->SetNumTubesHit(WCDC_hits->entries());
-    std::vector<double> truetime, smeartime;
+    std::vector<float> truetime, smeartime;
     std::vector<int>   primaryParentID;
     std::vector<float> photonStartTime;
     std::vector<TVector3> photonStartPos;

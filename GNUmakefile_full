@@ -53,7 +53,7 @@ endif
 CPPFLAGS += -DGIT_HASH=\"$(shell git describe --always --long --tags --dirty)\"
 
 .PHONY: all
-all: rootcint lib bin shared libWCSim.a movedict
+all: rootcint lib bin shared libWCSim.a
 
 # Note dependencies not yet set up right yet
 
@@ -73,13 +73,7 @@ libWCSim.a : $(ROOTOBJS)
 ./src/WCSimRootDict.cc : $(ROOTSRC)
 	rootcint  -f $(WCSIMDIR)/src/WCSimRootDict.cc -c -I$(WCSIMDIR)/include -I$(shell root-config --incdir) WCSimRootEvent.hh WCSimRootGeom.hh  WCSimPmtInfo.hh WCSimEnumerations.hh WCSimRootOptions.hh TJNuBeamFlux.hh TNRooTrackerVtx.hh WCSimRootTools.hh WCSimRootLinkDef.hh
 
-rootcint: $(WCSIMDIR)/src/WCSimRootDict.cxx
-
-movedict: rootcint
-ifneq (,$(wildcard ./src/WCSimRootDict_rdict.pcm))
-	cp -f ./src/WCSimRootDict_rdict.pcm .
-	cp -f ./src/WCSimRootDict_rdict.pcm ${G4WORKDIR}/tmp/${G4SYSTEM}/WCSim/
-endif
+rootcint: ./src/WCSimRootDict.cc
 
 doxy:
 	@if [ ${DOXYGEN_EXISTS} = 1 ]; \

@@ -62,20 +62,6 @@ void WCSimTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
     }
   else 
     fpTrackingManager->SetStoreTrajectory(false);
-
-    WCSimPrimaryGeneratorAction *primaryGenerator = (WCSimPrimaryGeneratorAction *) (G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
-    if(!primaryGenerator->IsCaptureFound()) {
-      if(aTrack->GetParentID()==0){
-          primaryID = aTrack->GetTrackID();
-      }
-      else if(aTrack->GetParentID() == primaryID) {
-          if (aTrack->GetCreatorProcess()->GetProcessName() == "nCapture") {
-              primaryGenerator->FoundCapture();
-          }
-          G4EventManager::GetEventManager()->AbortCurrentEvent();
-          G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetEventAborted();
-      }
-  }
 }
 
 void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
@@ -199,14 +185,17 @@ void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
   }
 
   WCSimPrimaryGeneratorAction *primaryGenerator = (WCSimPrimaryGeneratorAction *) (G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
-  if(!primaryGenerator->IsCaptureFound() && 
-     aTrack->GetTrackID() == primaryID &&
-     aTrack->GetStep()->GetPostStepPoint()->GetProcessDefinedStep() &&
-     aTrack->GetStep()->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() == "nCapture"){
-      size_t nSeco = secondaries->size();
-      for(int i=0; i<nSeco; i++){
-          primaryGenerator->AddCaptureProduct(secondaries->at(i)->GetParticleDefinition(), secondaries->at(i)->GetMomentum());
+  if(!primaryGenerator->IsCaptureFound() && aTrack->GetParentID()==0){
+    if(aTrack->GetStep()->GetPostStepPoint()->GetProcessDefinedStep() &&
+       aTrack->GetStep()->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() == "nCapture"){
+      size_t nSecondaries = secondaries->size();
+      for(int i=0; i<nSecondaries; i++){
+        primaryGenerator->AddCaptureProduct(secondaries->at(i)->GetParticleDefinition(), secondaries->at(i)->GetMomentum());
       }
+      primaryGenerator->FoundCapture();
+    }
+    G4EventManager::GetEventManager()->AbortCurrentEvent();
+    G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetEventAborted();
   }
 }
 

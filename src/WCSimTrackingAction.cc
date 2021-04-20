@@ -190,7 +190,10 @@ void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
        aTrack->GetStep()->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() == "nCapture"){
       size_t nSecondaries = secondaries->size();
       for(int i=0; i<nSecondaries; i++){
-        primaryGenerator->AddCaptureProduct(secondaries->at(i)->GetParticleDefinition(), secondaries->at(i)->GetMomentum());
+        G4Track * secondary = secondaries->at(i);
+        if(secondary->GetCreatorProcess()->GetProcessName() == "nCapture"){
+          primaryGenerator->AddCaptureProduct(secondary->GetParticleDefinition(), secondary->GetMomentum());
+        }
       }
       primaryGenerator->FoundCapture();
     }

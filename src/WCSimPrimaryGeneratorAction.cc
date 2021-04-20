@@ -444,6 +444,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
           particleGun->SetParticleMomentumDirection(tmpDir);
           foundCapture = false;
           while (!foundCapture) {
+              nCaptureProducts = 0;
               G4Event *tmpEvent = new G4Event(-1);
               particleGun->GeneratePrimaryVertex(tmpEvent);
               G4EventManager::GetEventManager()->ProcessOneEvent(tmpEvent);

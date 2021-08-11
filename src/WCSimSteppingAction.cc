@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include "WCSimSteppingAction.hh"
+#include "WCSimTrackInformation.hh"
 
 #include "G4Track.hh"
 #include "G4VProcess.hh"
@@ -114,6 +115,27 @@ void WCSimSteppingAction::UserSteppingAction(const G4Step* aStep)
 	}	*/
       
     }
+  }
+
+  // Record photon scattering history
+  if (particleType==G4OpticalPhoton::OpticalPhotonDefinition()) {
+    const G4VProcess* pds = thePostPoint->GetProcessDefinedStep();
+    WCSimTrackInformation* trackinfo = (WCSimTrackInformation*)(aStep->GetTrack()->GetUserInformation());
+
+    if (trackinfo) {
+      if (pds->GetProcessName() == "OpRayleigh") {     // Rayleigh scattering occurs
+        trackinfo->AddRaySct();
+      }
+      else if (pds->GetProcessName() == "OpMieHG") {   // Mie scattering occurs
+        trackinfo->AddMieSct();
+      }
+      else { // accepts boundary processes related to reflection, may include some unnecessary processes
+        if((boundary->GetStatus() >= FresnelReflection && boundary->GetStatus() <=BackScattering) || 
+           (boundary->GetStatus() >= PolishedLumirrorAirReflection && boundary->GetStatus() <=GroundVM2000GlueReflection))
+              trackinfo->AddReflec();
+      }
+    }
+
   }
 
 

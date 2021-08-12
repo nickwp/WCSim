@@ -515,8 +515,9 @@ WCSimRootCherenkovHitTime::WCSimRootCherenkovHitTime(Double_t truetime,
         fPhotonEndDir[i] = photonEndDir[i];
     }
     fReflection = photonHistory[0];
-    fRayScattering = photonHistory[1];
-    fMieScattering = photonHistory[2];
+    fReflectorReflection = photonHistory[1];
+    fRayScattering = photonHistory[2];
+    fMieScattering = photonHistory[3];
 }
 
 //_____________________________________________________________________________

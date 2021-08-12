@@ -131,11 +131,16 @@ void WCSimSteppingAction::UserSteppingAction(const G4Step* aStep)
       }
       else { // accepts boundary processes related to reflection, may include some unnecessary processes
         if((boundary->GetStatus() >= FresnelReflection && boundary->GetStatus() <=BackScattering) || 
-           (boundary->GetStatus() >= PolishedLumirrorAirReflection && boundary->GetStatus() <=GroundVM2000GlueReflection))
-              trackinfo->AddReflec();
+           (boundary->GetStatus() >= PolishedLumirrorAirReflection && boundary->GetStatus() <=GroundVM2000GlueReflection)){
+            G4TouchableHandle theTouchable = thePrePoint->GetTouchableHandle();
+            G4String VolumeName = theTouchable->GetVolume()->GetLogicalVolume()->GetName();
+            if(VolumeName == "reflectorCone")
+                trackinfo->AddReflectorReflec();
+            else
+                trackinfo->AddReflec();
+        }
       }
     }
-
   }
 
 

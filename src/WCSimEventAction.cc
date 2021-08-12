@@ -321,7 +321,7 @@ void WCSimEventAction::EndOfEventAction(const G4Event* evt)
       for (int pe = 0; pe < nPoisson; pe++) {
 	G4float time = G4RandGauss::shoot(0.0,10.);
 	G4ThreeVector dir(0, 0, 0);
-  std::vector<G4int> photonHistory(3,0);
+  std::vector<G4int> photonHistory(4,0);
 	(*WCHC)[hitIndex]->AddPe(time);
 	(*WCHC)[hitIndex]->AddParentID(0); // Make parent a geantino (whatever that is)
 	(*WCHC)[hitIndex]->AddPhotonStartPos(pos);

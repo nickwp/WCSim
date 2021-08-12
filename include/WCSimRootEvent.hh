@@ -122,6 +122,7 @@ private:
   Float_t fPhotonEndDir[3];
   // Number of scattering/reflection a photon experiences
   Int_t fReflection;
+  Int_t fReflectorReflection;
   Int_t fRayScattering;
   Int_t fMieScattering;
 
@@ -145,6 +146,7 @@ public:
   Float_t   GetPhotonStartDir(int i) { return (i<3) ? fPhotonStartDir[i] : 0; }
   Float_t   GetPhotonEndDir(int i) { return (i<3) ? fPhotonEndDir[i] : 0; }
   Int_t     GetReflection() { return fReflection; }
+  Int_t     GetReflectorReflection() { return fReflectorReflection; }
   Int_t     GetRayScattering() { return fRayScattering; }
   Int_t     GetMieScattering() { return fMieScattering; }
 

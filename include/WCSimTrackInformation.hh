@@ -24,11 +24,12 @@ private:
   // Tracking photon reflection and scattering history
   // These integers record the number of reflection/scattering before a photon reaches the sensitive detector
   G4int nReflection;
+  G4int nReflectorReflection;
   G4int nRayScattering;
   G4int nMieScattering;
 
 public:
-  WCSimTrackInformation() : saveit(false), primaryParentID(-99), nReflection(0), nRayScattering(0), nMieScattering(0) {}  //TF: initialize to value with NO meaning instead of DN
+  WCSimTrackInformation() : saveit(false), primaryParentID(-99), nReflection(0), nReflectorReflection(0), nRayScattering(0), nMieScattering(0) {}  //TF: initialize to value with NO meaning instead of DN
   WCSimTrackInformation(const WCSimTrackInformation* aninfo) {
       saveit = aninfo->saveit;
       primaryParentID = aninfo->primaryParentID;
@@ -37,6 +38,7 @@ public:
       photonStartDir = aninfo->photonStartDir;
 
       nReflection = 0;
+      nReflectorReflection = 0;
       nRayScattering = 0;
       nMieScattering = 0;
   }
@@ -55,11 +57,12 @@ public:
   G4ThreeVector GetPhotonStartPos() {return photonStartPos;}
   G4ThreeVector GetPhotonStartDir() {return photonStartDir;}
 
-  void ResetPhotonHistory() { nReflection=0; nRayScattering=0; nMieScattering=0; }
+  void ResetPhotonHistory() { nReflection=0; nReflectorReflection=0; nRayScattering=0; nMieScattering=0;}
   void AddRaySct() { nRayScattering++; }
   void AddMieSct() { nMieScattering++; }
   void AddReflec() { nReflection++; }
-  std::vector<G4int> GetPhotonHistory() { std::vector<G4int> photonHistory{ nReflection, nRayScattering, nMieScattering }; return photonHistory; }
+  void AddReflectorReflec() { nReflectorReflection++; }
+  std::vector<G4int> GetPhotonHistory() { std::vector<G4int> photonHistory{ nReflection, nReflectorReflection, nRayScattering, nMieScattering}; return photonHistory; }
 
   inline void *operator new(size_t);
   inline void operator delete(void *aTrackInfo);

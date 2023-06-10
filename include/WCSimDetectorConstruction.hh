@@ -534,6 +534,7 @@ private:
   G4double WCIDRadius;
   G4double totalAngle;
   G4double dPhi;
+  G4double barrelPhiOffset;
   G4double barrelCellHeight;
   G4double mainAnnulusHeight;
   G4double innerAnnulusRadius;

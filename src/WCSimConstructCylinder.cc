@@ -319,7 +319,7 @@ else {
 		    kPhi,
 		    (G4int)WCBarrelRingNPhi,
 		    dPhi,
-                    0.); 
+            barrelPhiOffset);
 
   if(!debugMode)
   	{G4VisAttributes* tmpVisAtt = new G4VisAttributes(G4Colour(1.,0.5,0.5));
@@ -999,7 +999,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
                     kPhi,
                     (G4int)WCBarrelRingNPhi,
                     dPhi,
-                    0.);
+                    barrelPhiOffset);
 
 // These lines of code below will turn the border rings invisible. 
 

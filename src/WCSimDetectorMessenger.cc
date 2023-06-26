@@ -363,6 +363,12 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
   SetDetectorDiameter->SetUnitCategory("Length");
   SetDetectorDiameter->SetDefaultUnit("m");
 
+  // Rotate barrel by half a tower for alternative alignment of barrel (m)PMTs
+  RotateBarrelHalfTower = new G4UIcmdWithABool("/WCSim/PMT/RotateBarrelHalfTower",this);
+  RotateBarrelHalfTower->SetGuidance("Rotate barrel by half a tower for alternative alignment of barrel (m)PMTs");
+  RotateBarrelHalfTower->SetParameterName("RotateBarrelHalfTower",false);
+  RotateBarrelHalfTower->SetDefaultValue(false);
+
   // Use the default replica method to place PMTs or not
   UseReplica = new G4UIcmdWithABool("/WCSim/PMT/ReplicaPlacement",this);
   UseReplica->SetGuidance("Use replica method to place PMTs (default = true)");
@@ -414,6 +420,7 @@ WCSimDetectorMessenger::~WCSimDetectorMessenger()
   delete mPMT_CylRadius;
   delete WCSimDir;
   delete mPMTDir;
+  delete RotateBarrelHalfTower;
 
   delete UseReplica;
   delete PMTPosVar;
@@ -679,6 +686,11 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 					      WCSimDetector->GetWCIDVerticalPosition());
 					      } */
 	}
+
+    if (command == RotateBarrelHalfTower){
+        G4cout << "Rotate barrel by half of one tower?  " << newValue << G4endl;
+        WCSimDetector->SetRotateBarrelHalfTower(HalfTowerBarrelRotation->GetNewBoolValue(newValue));
+    }
 
 	if (command == UseReplica){
 	  G4cout << "Use replica method to place PMTs ?  " << newValue << G4endl;

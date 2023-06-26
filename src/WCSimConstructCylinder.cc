@@ -71,9 +71,10 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
   totalAngle  = 2.0*pi*rad*(WCBarrelRingNPhi*WCPMTperCellHorizontal/WCBarrelNumPMTHorizontal) ;
   // angle per regular cell:
   dPhi        =  totalAngle/ WCBarrelRingNPhi;
-  barrelPhiOffset = 0.;
-  if(isNuPrismBeamTest_16cShort)
+  if(rotateBarrelHalfTower)
       barrelPhiOffset = -dPhi/2; // For WCTE, the barrel is rotated by half a tower for correct alignment with endcaps
+  else
+      barrelPhiOffset = 0.;
   // it's height:
   barrelCellHeight  = (WCIDHeight-2.*WCBarrelPMTOffset)/WCBarrelNRings;
   // the height of all regular cells together:

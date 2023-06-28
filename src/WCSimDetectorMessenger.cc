@@ -364,7 +364,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
   SetDetectorDiameter->SetDefaultUnit("m");
 
   // Rotate barrel by half a tower for alternative alignment of barrel (m)PMTs
-  RotateBarrelHalfTower = new G4UIcmdWithABool("/WCSim/PMT/RotateBarrelHalfTower",this);
+  RotateBarrelHalfTower = new G4UIcmdWithABool("/WCSim/Geometry/RotateBarrelHalfTower",this);
   RotateBarrelHalfTower->SetGuidance("Rotate barrel by half a tower for alternative alignment of barrel (m)PMTs");
   RotateBarrelHalfTower->SetParameterName("RotateBarrelHalfTower",false);
   RotateBarrelHalfTower->SetDefaultValue(false);
@@ -689,7 +689,7 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 
     if (command == RotateBarrelHalfTower){
         G4cout << "Rotate barrel by half of one tower?  " << newValue << G4endl;
-        WCSimDetector->SetRotateBarrelHalfTower(HalfTowerBarrelRotation->GetNewBoolValue(newValue));
+        WCSimDetector->SetRotateBarrelHalfTower(RotateBarrelHalfTower->GetNewBoolValue(newValue));
     }
 
 	if (command == UseReplica){

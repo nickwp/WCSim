@@ -28,9 +28,7 @@
 #/WCSim/WCgeom nuPRISM_mPMT
 #/WCSim/WCgeom nuPRISMBeamTest_mPMT
 /WCSim/WCgeom nuPRISMShort_mPMT
-# Rotate barrel by half a tower (needed for correct WCTE geometry)
-/WCSim/Geometry/RotateBarrelHalfTower true
-# True --> default replica method to place PMTs. False --> new placement method 
+# True --> default replica method to place PMTs. False --> new placement method
 /WCSim/PMT/ReplicaPlacement true
 ############################################################################################
 ##These comments are only useful when /WCSim/PMT/ReplicaPlacement=false

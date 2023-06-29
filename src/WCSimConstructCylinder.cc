@@ -841,7 +841,7 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
 
     G4RotationMatrix* WCPMTRotation = new G4RotationMatrix;
     WCPMTRotation->rotateY(90.*deg);
-    WCPMTRotation->rotateX((2*pi-totalAngle)/2.);//align the PMT with the Cell
+    WCPMTRotation->rotateX((2*pi-totalAngle)/2.-barrelPhiOffset);//align the PMT with the Cell
                                                  
     G4double towerWidth = WCIDRadius*tan(2*pi-totalAngle);
 
@@ -853,7 +853,7 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
 	G4ThreeVector PMTPosition =  G4ThreeVector(WCIDRadius/cos(dPhi/2.)*cos((2.*pi-totalAngle)/2.),
 				towerWidth/2.-(i+0.5)*horizontalSpacing,
 			       -barrelCellHeight/2.+(j+0.5)*verticalSpacing);
-	PMTPosition.rotateZ(-(2*pi-totalAngle)/2.); // align with the symmetry 
+	PMTPosition.rotateZ(barrelPhiOffset-(2*pi-totalAngle)/2.); // align with the symmetry 
 	                                            //axes of the cell 
 
 	G4VPhysicalVolume* physiWCBarrelPMT =
@@ -1544,7 +1544,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
 
     G4RotationMatrix* WCPMTRotation = new G4RotationMatrix;
     WCPMTRotation->rotateY(90.*deg);
-    WCPMTRotation->rotateX((2*pi-totalAngle)/2.);//align the PMT with the Cell
+    WCPMTRotation->rotateX((2*pi-totalAngle)/2.-barrelPhiOffset);//align the PMT with the Cell
                                                  
     G4double towerWidth = WCIDRadius*tan(2*pi-totalAngle);
 
@@ -1556,7 +1556,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
 	G4ThreeVector PMTPosition =  G4ThreeVector(WCIDRadius/cos(dPhi/2.)*cos((2.*pi-totalAngle)/2.),
 				towerWidth/2.-(i+0.5)*horizontalSpacing,
 			       (-barrelCellHeight/2.+(j+0.5)*verticalSpacing)*zflip);
-	PMTPosition.rotateZ(-(2*pi-totalAngle)/2.); // align with the symmetry 
+	PMTPosition.rotateZ(barrelPhiOffset-(2*pi-totalAngle)/2.); // align with the symmetry 
 	                                            //axes of the cell 
 	
 	G4VPhysicalVolume* physiWCBarrelBorderPMT =

@@ -3101,7 +3101,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
         PMTRotation->rotateY(0.*deg); //if mPMT: vertical/aligned to wall
       else if(orientation == HORIZONTAL)
         PMTRotation->rotateX(90.*deg); //if mPMT: horizontal to wall
-      PMTRotation->rotateX((2*pi-totalAngle)/2.);//align the PMT with the Cell
+      PMTRotation->rotateX((2*pi-totalAngle)/2.-barrelPhiOffset);//align the PMT with the Cell
       if(orientation == PERPENDICULAR)
         PMTRotation->rotateY(-dth); 
       else if(orientation == VERTICAL)
@@ -3135,7 +3135,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
           }
           PMTID++;
 
-          PMTPosition.rotateZ(-(2*pi-totalAngle)/2.); // align with the symmetry axes of the cell 
+          PMTPosition.rotateZ(barrelPhiOffset-(2*pi-totalAngle)/2.); // align with the symmetry axes of the cell 
           
           G4VPhysicalVolume* physiWCBarrelBorderPMT =
             new G4PVPlacement(PMTRotation,                          // its rotation

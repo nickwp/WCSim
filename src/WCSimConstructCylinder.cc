@@ -2352,7 +2352,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinderNoReplica()
 
             if (readFromTable)
             {
-              G4double newPhi = atan2(pmtPos[PMTID].y(),pmtPos[PMTID].x())+(2*pi-totalAngle)/2.;
+              G4double newPhi = atan2(pmtPos[PMTID].y(),pmtPos[PMTID].x())+(2*pi-totalAngle)/2.-barrelPhiOffset;
               PMTPosition.setY(newR*tan(newPhi) + G4RandGauss::shoot(0,pmtPosVar));
               G4cout<<"Annulus tower PMTID = "<<PMTID<<", Position = "<<pmtPos[PMTID].x()<<" "<<pmtPos[PMTID].y()<<" "<<pmtPos[PMTID].z()<<G4endl;
             }

@@ -47,7 +47,7 @@ WCSimRunAction::~WCSimRunAction()
 
 }
 
-void WCSimRunAction::BeginOfRunAction(const G4Run* /*aRun*/)
+void WCSimRunAction::BeginOfRunAction(const G4Run* aRun)
 {
 
   fSettingsOutputTree = NULL;
@@ -113,48 +113,72 @@ void WCSimRunAction::BeginOfRunAction(const G4Run* /*aRun*/)
   G4String rootname = GetRootFileName();
   
   if(useDefaultROOTout){
-    TFile* hfile = new TFile(rootname.c_str(),"RECREATE","WCSim ROOT file");
-    hfile->SetCompressionLevel(2);
-    
-    // Event tree
-    WCSimTree = new TTree("wcsimT","WCSim Tree");
     
     wcsimrootsuperevent = new WCSimRootEvent(); //empty list
     //  wcsimrootsuperevent->AddSubEvent(); // make at least one event
     wcsimrootsuperevent->Initialize(); // make at least one event
-    Int_t branchStyle = 1; //new style by default
-    TTree::SetBranchStyle(branchStyle);
-    Int_t bufsize = 64000;
     
-    //  TBranch *branch = tree->Branch("wcsimrootsuperevent", "Jhf2kmrootsuperevent", &wcsimrootsuperevent, bufsize,0);
-    TBranch *branch = WCSimTree->Branch("wcsimrootevent", "WCSimRootEvent", &wcsimrootsuperevent, bufsize,2);
-    
-    // Geometry tree
-    
-    geoTree = new TTree("wcsimGeoT","WCSim Geometry Tree");
     wcsimrootgeom = new WCSimRootGeom();
-    geoTree->Branch("wcsimrootgeom", "WCSimRootGeom", &wcsimrootgeom, bufsize,0);
-    
-    FillGeoTree();
 
-    // Options tree
-    optionsTree = new TTree("wcsimRootOptionsT","WCSim Options Tree");
-    optionsTree->Branch("wcsimrootoptions", "WCSimRootOptions", &wcsimrootoptions, bufsize, 0);
-    
-    //set detector & random options
-    wcsimdetector->SaveOptionsToOutput(wcsimrootoptions);
-    wcsimrandomparameters->SaveOptionsToOutput(wcsimrootoptions);
-     
-    //Setup rooTracker tree
     if(SaveRooTracker){
       //Setup TClonesArray to store Rootracker truth info
       fVertices = new TClonesArray("NRooTrackerVtx", 10);
       fVertices->Clear();
       fNVtx = 0;
-      fRooTrackerOutputTree = new TTree("fRooTrackerOutputTree","Event Vertex Truth Array");
-      fRooTrackerOutputTree->Branch("NVtx",&fNVtx,"NVtx/I");
-      fRooTrackerOutputTree->Branch("NRooTrackerVtx","TClonesArray", &fVertices);
     }
+    
+    if (aRun->GetRunID() == 0){
+      TFile* hfile = new TFile(rootname.c_str(),"RECREATE","WCSim ROOT file");
+      hfile->SetCompressionLevel(2);
+    
+      // Event tree
+      WCSimTree = new TTree("wcsimT","WCSim Tree");
+    
+      Int_t branchStyle = 1; //new style by default
+      TTree::SetBranchStyle(branchStyle);
+      Int_t bufsize = 64000;
+    
+      //  TBranch *branch = tree->Branch("wcsimrootsuperevent", "Jhf2kmrootsuperevent", &wcsimrootsuperevent, bufsize,0);
+      TBranch *branch = WCSimTree->Branch("wcsimrootevent", "WCSimRootEvent", &wcsimrootsuperevent, bufsize,2);
+    
+      // Geometry tree
+    
+      geoTree = new TTree("wcsimGeoT","WCSim Geometry Tree");
+      geoTree->Branch("wcsimrootgeom", "WCSimRootGeom", &wcsimrootgeom, bufsize,0);
+    
+
+      // Options tree
+      optionsTree = new TTree("wcsimRootOptionsT","WCSim Options Tree");
+      optionsTree->Branch("wcsimrootoptions", "WCSimRootOptions", &wcsimrootoptions, bufsize, 0);
+    
+      //Setup rooTracker tree
+      if(SaveRooTracker){
+        fRooTrackerOutputTree = new TTree("fRooTrackerOutputTree","Event Vertex Truth Array");
+        fRooTrackerOutputTree->Branch("NVtx",&fNVtx,"NVtx/I");
+        fRooTrackerOutputTree->Branch("NRooTrackerVtx","TClonesArray", &fVertices);
+      }
+    }
+    else{
+      TFile* hfile = new TFile(rootname.c_str(),"UPDATE");
+      WCSimTree = (TTree*) hfile->Get("wcsimT");
+      WCSimTree->SetBranchAddress("wcsimrootevent", &wcsimrootsuperevent);
+      geoTree = (TTree*) hfile->Get("wcsimGeoT");
+      geoTree->SetBranchAddress("wcsimrootgeom", &wcsimrootgeom);
+      optionsTree = (TTree*) hfile->Get("wcsimRootOptionsT");
+      optionsTree->SetBranchAddress("wcsimrootoptions", &wcsimrootoptions);
+      if(SaveRooTracker){
+        fRooTrackerOutputTree = (TTree*) hfile->Get("fRooTrackerOutputTree");
+        fRooTrackerOutputTree->SetBranchAddress("NVtx",&fNVtx);
+        fRooTrackerOutputTree->SetBranchAddress("NRooTrackerVtx",&fVertices);
+      }
+    }
+
+    FillGeoTree();
+    
+    //set detector & random options
+    wcsimdetector->SaveOptionsToOutput(wcsimrootoptions);
+    wcsimrandomparameters->SaveOptionsToOutput(wcsimrootoptions);
+     
   }
 
   //TF: New Flat tree format:
